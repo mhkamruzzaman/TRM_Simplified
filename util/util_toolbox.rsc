@@ -7,6 +7,10 @@ DBox "Util Toolbox" center,center title: "PLAN 739 Utilities" Toolbox
         RunDBox("Extract Road Line Layer UI")
     endItem
 
+    Button "Set Initial Speeds" same, after do
+        RunDBox("Set Initial Speeds UI")
+    endItem
+
     Button "Extract Transit Route System" same, after do
         RunDBox("Extract Transit Route System UI")
     endItem

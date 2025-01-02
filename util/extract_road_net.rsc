@@ -1,11 +1,20 @@
 DBox "Extract Road Line Layer UI" title: "Extract Road Line Layer"
-    Text "Master Line Layer" 0, 0
+    Button "Master Line Layer" 0, 0 do
+        master_dbd = ChooseFile({{"Line layer", "*.dbd"}}, "Choose Master Line Layer", null)
+    enditem
+
     Edit Text "Master Line Layer" after, same variable: master_dbd
 
-    Text "Project List CSV" 0, after
-    Edit Text "Project List" after, same variable: proj_list
+    Button "Project CSV" 0, after do
+        proj_list = ChooseFile({{"CSV file", "*.csv"}}, "Choose Project CSV", null)
+    enditem
 
-    Text "Output Line Layer" 0, after
+    Edit Text "Project CSV" after, same variable: proj_list
+
+    Button "Output Line Layer" 0, after do
+        hwy_dbd = ChooseFileName({{"Output Line Layer", "*.dbd"}}, "Choose output line layer", null)
+    enditem
+
     Edit Text "Output Line Layer" after, same variable: hwy_dbd
 
     Button "OK" 0, after default do

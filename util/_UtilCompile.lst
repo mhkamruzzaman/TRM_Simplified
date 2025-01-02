@@ -1,4 +1,5 @@
 trmg2_support_functions.rsc
 extract_road_net.rsc
 extract_transit_net.rsc
+set_initial_speeds.rsc
 util_toolbox.rsc
