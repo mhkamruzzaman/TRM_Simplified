@@ -1,0 +1,95 @@
+
+/**
+    Declare all the parameters used by this model.
+    Parameters are organized by section, page and frame
+    Section = "Group1|Group2|Group3|Page#Frame"
+        Args.ParameterName =
+        {
+            "Caption": caption,
+            "Type": type,
+            "Value": value,
+            "Description": caption,
+            "Style": param_style,
+            "Section": "group|page"
+     }
+**/
+
+    Section = "Files and Folders"
+        Args.[Base Folder] = {
+                "Type": "Folder",
+                "Value": null
+            }
+        Args.Scenario = {
+                "Type": "string",
+                "Value": "Base"
+            }
+        Args.InputFolder = {
+                "Type": "folder",
+                "Value": "%Base Folder%\\%Scenario%\\Input"
+            }
+        Args.OutputFolder = {
+                "Type": "folder",
+                "Value": "%Base Folder%\\%Scenario%\\Output"
+            }
+
+    Section = "Tables"
+        Args.[Simple Table] = {
+                "Type": "array",
+                "Style": "SimpleTable",
+                "Value": null
+            }
+    Section = "Numbers"
+        Args.[Int  Interval] = {
+                "Type":"array",
+                "Style": "IntRange",
+                "Value": null
+            }
+        Args.[Real Interval] = {
+                "Type": "array",
+                "Style": "RealRange",
+                "Value": null
+            }
+        Args.[Int  Value] = {
+                "Type": "int",
+                "Style": "IntSlider",
+                "Value": null
+            }
+        Args.[Real Value] = {
+                "Type": "double",
+                "Style": "RealSlider",
+                "Value": null
+            }
+
+    Section = "Choices"
+        Args.[Radio Value] = {
+                "Type": "string",
+                "Style": "RadioList",
+                "Value": null
+            }
+        Args.[Checkbox Value] = {
+                "Type": "array",
+                "Style": "CheckBoxes",
+                "Value": null
+            }
+        Args.[Droplist Value] = {
+                "Type": "string",
+                "Style": "DropList",
+                "Value": null
+            }
+        Args.[Combobox Value] = {
+                "Type": "string",
+                "Style": "ComboBox",
+                "Value": null
+            }
+    
+    Section = "Runtime Parameters"
+        Args.[Disable Steps] = {
+            "Type":"array",
+            "Description":"List of disabled step names for each scenario",
+            "Value":null
+        }
+        Args.[Disable Macros] = {
+            "Type":"array",
+            "Description":"List of disabled macro names for each scenario",
+            "Value":null
+        }
