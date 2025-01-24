@@ -1,0 +1,26 @@
+{
+	"Model": {
+		"Description": [
+			"The main model is TRM_Simplified.model",
+			"Source code files listed in Parameters, Scenarios, Plugins, Menus, Styles and Reports are common to all the models in this folder",
+			"The Initial state of the model has no submodels included (no Models array)."
+		],
+		"Author": null,
+		"Version": null,
+		"Name": "TRM_Simplified.model",
+		"Parameters": [
+			"Parameters\\TRM_Simplified.parameters"
+		],
+		"Styles": [
+			"Parameters\\TRM_Simplified.styles",
+			"Parameters\\Common.styles"
+		],
+		"Scenarios": "TRM_Simplified.scenarios",
+		"Plugins": [
+			"Code\\TRM_Simplified Plugins.rsc"
+		],
+		"Menus": [
+			"Code\\TRM_Simplified Menus.rsc"
+		]
+	}
+}

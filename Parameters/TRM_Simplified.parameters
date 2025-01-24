@@ -1,0 +1,37 @@
+
+/**
+    Declare all the parameters used by this model.
+    Parameters are organized by section, page and frame
+    Section = "Group1|Group2|Group3|Page#Frame"
+        Args.ParameterName =
+        {
+            "Caption": caption,
+            "Type": type,
+            "Value": value,
+            "Description": caption,
+            "Style": param_style,
+            "Section": "group|page"
+     }
+**/
+
+    Section = "Files and Folders"
+        Args.[Base Folder] = {
+                "Type": "Folder",
+                "Description": "Folder containing inputs for this model run",
+                "Value": null
+            }
+
+        Args.[Road Line Layer] = {
+                "Type": "file",
+                "Description": "Line layer for street network",
+                "Value": "%Base Folder%\\Networks\\Base Roads.dbd"
+            }
+        Args.[Transit Route System] = {
+                "Type": "file",
+                "Description": "Transit Route System",
+                "Value": "%Base Folder%\\Networks\\base_routes.rts"
+            }
+        Args.[Output Folder] = {
+            "Type": "folder",
+            "Description": "Output folder (will be set automatically)"
+        }

@@ -1,0 +1,39 @@
+
+/**
+  The macro "TRM_Simplified" holds the definition for the graphical flowchart of this model,
+  with steps and links connecting steps.
+**/
+Macro "TRM_Simplified" (Args)
+Body:
+    // model = FlowChart( { StartNodes } , { EndNodes } , Description)
+    model = FlowChart({"Initialize"},{"Initialize"},)
+    //
+    // Nodes
+    //
+    // FlowChartNode(model,NodeName,MacroName,UI,Description)
+    //
+    FlowChartNode(model,"Initialize",,,)
+    //
+    // Links
+    //
+    // FlowChartLink(model , FromNode , ToNode , Condition , Description , IsFeedbackLoop)
+    //
+    Return(model)
+EndMacro
+
+
+Macro "Build Road Network" (Args,Result)
+    Attributes = {
+        {"Class", {"GISDK"}},
+        {"MacroNames", { /* "Macro Name 1", ..., "Macro Name n" */ }}
+    }
+EndMacro
+
+
+Macro "Initialize" (Args,Result)
+    Attributes = {
+        {"Class", {"GISDK"}},
+        {"MacroNames", {"Initialize TRMS"}}
+    }
+EndMacro
+
