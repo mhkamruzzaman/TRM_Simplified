@@ -11,6 +11,14 @@ DBox "Util Toolbox" center,center title: "PLAN 739 Utilities" Toolbox
         RunDBox("Set Initial Speeds UI")
     endItem
 
+    Button "Update Bus Speeds" same, after do
+        RunDBox("Update Bus Speeds UI")
+    endItem
+
+    Button "Set Mode Field" same, after do
+        RunDBox("Set Mode to 1 UI")
+    endItem
+
     Button "Extract Transit Route System" same, after do
         RunDBox("Extract Transit Route System UI")
     endItem

@@ -40,6 +40,12 @@ Macro "Calculate Initial Speeds" (out_dbd)
     })
 
     posted_speeds = GetDataVector(llyr + "|", "PostedSpeed", )
+
+    for i = 1 to posted_speeds.length do
+        // default to 25 mph
+        if posted_speeds[i] = null then posted_speeds[i] = 25
+    end
+
     length = GetDataVector(llyr + "|", "Length", )
     dir = GetDataVector(llyr + "|", "Dir", )
     ffs = length / posted_speeds * 60  // convert to minutes
@@ -55,4 +61,6 @@ Macro "Calculate Initial Speeds" (out_dbd)
         SetDataVector(llyr + "|", "ABTime" + period, ffsAB, )
         SetDataVector(llyr + "|", "BATime" + period, ffsBA, )
     end
+
+    // set walk speeds
 endmacro

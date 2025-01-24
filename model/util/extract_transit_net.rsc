@@ -24,6 +24,7 @@ DBox "Extract Transit Route System UI" title: "Extract Transit Route System"
         MacroOpts.proj_list = proj_list
         MacroOpts.centroid_qry = "Centroid = 1"
         MacroOpts.link_qry = "1 = 1" // select all
+        MacroOpts.output_rts_file = "base_routes.rts"
         RunMacro("Transit Project Management", MacroOpts)
         return()
     endItem
