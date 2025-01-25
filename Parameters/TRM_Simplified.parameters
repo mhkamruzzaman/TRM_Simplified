@@ -32,6 +32,12 @@
             "Description": "Transit speed table (as a function of auto speed by facility type)",
             "Value": "%Base Folder%\\Networks\\bus_speeds.csv"
         }
+
+        Args.[TAZ File] = {
+            "Type": "file",
+            "Description": "TAZ/sociodemographic file",
+            "Value": "%Base Folder%\\Socioeconomics\\tazs_2020_geog.dbd"
+        }
         
         Args.[Output Folder] = {
             "Type": "folder",
@@ -43,4 +49,12 @@
             "Type": "string",
             "Description": "Filter to select links for drive network",
             "Value": "DTWB contains 'D'"
+        }
+
+
+    Section = "Accessibility"
+        Args.[Cumulative Opportunity Cutoff Minutes] = {
+            "Type": "Array",
+            "Description": "Cutoff/threshold for cumulative opportunity metrics",
+            "Value": {15.0, 30.0, 45.0, 60.0}
         }
