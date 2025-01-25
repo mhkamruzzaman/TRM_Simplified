@@ -56,8 +56,6 @@ Macro "Calculate Bus Speeds" (out_dbd, speed_table)
     {, speed_specs} = RunMacro("Get Fields", {view_name: speed_table})
     {, llyr_specs} = RunMacro("Get Fields", {view_name: llyr})
 
-    ShowArray(llyr_specs)
-
     jv = JoinViews(
         "jv",
         llyr_specs.HCMType,
