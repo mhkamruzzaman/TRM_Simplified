@@ -26,6 +26,13 @@
                 "Description": "Transit Route System",
                 "Value": "%Base Folder%\\Networks\\base_routes.rts"
             }
+
+        Args.[Bus Speed Table] = {
+            "Type": "file",
+            "Description": "Transit speed table (as a function of auto speed by facility type)",
+            "Value": "%Base Folder%\\Networks\\bus_speeds.csv"
+        }
+        
         Args.[Output Folder] = {
             "Type": "folder",
             "Description": "Output folder (will be set automatically)"

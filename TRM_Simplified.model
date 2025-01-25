@@ -6,7 +6,7 @@
 Macro "TRM_Simplified" (Args)
 Body:
     // model = FlowChart( { StartNodes } , { EndNodes } , Description)
-    model = FlowChart({"Initialize"},{"Build Drive Network"},)
+    model = FlowChart({"Initialize"},{"Build Transit Networks"},)
     //
     // Nodes
     //
@@ -14,12 +14,14 @@ Body:
     //
     FlowChartNode(model,"Initialize",,,)
     FlowChartNode(model,"Build Drive Network",,,)
+    FlowChartNode(model,"Build Transit Networks",,,)
     //
     // Links
     //
     // FlowChartLink(model , FromNode , ToNode , Condition , Description , IsFeedbackLoop)
     //
     FlowChartLink(model,"Initialize","Build Drive Network",True,,)
+    FlowChartLink(model,"Build Drive Network","Build Transit Networks",True,,)
     Return(model)
 EndMacro
 
@@ -52,5 +54,18 @@ Data:
     In({ Args.[Drive Filter] })
     In({ Args.[Output Folder] })
     In({ Args.[Road Line Layer] })
+EndMacro
+
+
+Macro "Build Transit Networks" (Args,Result)
+    Attributes = {
+        {"Class", {"GISDK"}},
+        {"MacroNames", {"Build Transit Networks"}}
+    }
+Data:
+    In({ Args.[Bus Speed Table] })
+    In({ Args.[Output Folder] })
+    In({ Args.[Road Line Layer] })
+    In({ Args.[Transit Route System] })
 EndMacro
 

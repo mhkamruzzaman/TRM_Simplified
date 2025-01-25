@@ -45,6 +45,8 @@ Macro "Calculate Bus Speeds" (out_dbd, speed_table)
             "Bus time in the " + period + " period (minutes).|Updated after each assignment."}}
     end
 
+    a_fields = a_fields + {{"WalkTime", "Real", 10, 2, , , , "Walk time"}}
+
     RunMacro("Add Fields", {
         view: llyr,
         a_fields: a_fields,
@@ -75,6 +77,11 @@ Macro "Calculate Bus Speeds" (out_dbd, speed_table)
             SetDataVector(jv + "|", llyr_specs.(dir + "BusTime" + period), times / speed_factors, )
         end
     end
+
+    // also do walk speeds
+    lengths = GetDataVector(jv + "|", llyr_specs.[Length], )
+    // assume 2.9 mph
+    SetDataVector(jv + "|", llyr_specs.WalkTime, lengths / 2.9 * 60, )
 
     CloseView("jv")
     CloseView("speed_table")
