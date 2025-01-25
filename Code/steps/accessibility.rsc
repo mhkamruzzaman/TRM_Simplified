@@ -59,37 +59,20 @@ Macro "Compute Accessibility" (Args, Results)
             skim = CreateMatrixCurrency(skimmtx, core, idx, idx,)
 
             for threshold in thresholds do
-                //accessiblemtx = CopyMatrix(skim, {"Memory Only": true})
-                //accessible = CreateMatrixCurrency(accessiblemtx, core, idx, idx, )
-                //accessible := if (accessible <= threshold) then 1.0 else 0.0
-
                 for col in {"Retail", "Service_RateLow", "Service_RateHigh", "Office"} do
 
                     colname = "Access_" + mode + "_" + period + "_" + col + "_" + String(threshold)
 
                     opportunities = GetDataVector(se + "|", col,)
-
-                    // will this work? or does opportunities need to become a matrix currency?
-                    // can't get it to work as a matrix multiplication
-                    //access = MultiplyMatrix(accessible, opportunities,)
-
                     access = GetDataVector(table + "|", colname,)
 
+                    // I wanted to do this with a matrix multiplication, but since opportunities
+                    // is a vector I wasn't able to
                     for orig = 1 to access.length do
                         ttimes = GetMatrixVector(skim, { "Row": ids[orig] })
 
                         destacc = ((ttimes < threshold) * opportunities)
                         access[orig] = destacc.sum()
-
-                        /*access[orig] = 0.0
-
-                        rowId = ids[orig]
-                        for dest = 1 to opportunities.length do 
-                            colId = ids[dest]
-
-                            // from docs: "ID values are strings to accommodate the return value from GetEditorHighlight()."
-                            if GetMatrixValue(skim, String(rowId), String(colId)) < threshold then access[orig] = access[orig] + opportunities[dest]
-                        end*/
                     end
 
                     SetDataVector(table + "|", colname, access, )
