@@ -34,5 +34,10 @@ macro "Build Drive Network" (Args)
 
     AppendToLogFile(1, "Network built")
 
+
+    AppendToLogFile(1, "Creating map file")
+    RunMacro("Create Drive Network Map", Args.[Road Line Layer], Args.[Drive Filter],
+    Args.[Output Folder] + "auto.net", Args.[Output Folder] + "auto.map")
+
     return(true)
 endmacro

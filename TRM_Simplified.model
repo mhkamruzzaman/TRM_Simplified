@@ -69,3 +69,16 @@ Data:
     In({ Args.[Transit Route System] })
 EndMacro
 
+
+Macro "Write Additional Outputs" (Args,Result)
+    Attributes = {
+        {"Class", {"GISDK"}},
+        {"MacroNames", {"Write Additional Outputs"}}
+    }
+Data:
+    In({ Args.[Drive Filter] })
+    In({ Args.[Output Folder] })
+    In({ Args.[Road Line Layer] })
+    In({ Args.[Transit Route System] })
+EndMacro
+

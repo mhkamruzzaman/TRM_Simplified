@@ -8,6 +8,8 @@ Code/util/json.rsc
 Code/util/input_data.rsc
 Code/util/bus_speeds.rsc
 Code/util/flowchart.rsc
+Code/util/create_drive_net_map.rsc
+Code/util/create_transit_net_map.rsc
 Code/steps/initialize.rsc
 Code/steps/build_drive_net.rsc
 Code/steps/build_transit_net.rsc

@@ -38,6 +38,9 @@ macro "Build Transit Networks" (Args)
 
     for period in {"AM", "MD", "PM", "NT"} do
         RunMacro("Build Transit Network for Period", Args.[Transit Route System], Args.[Output Folder], period)
+
+        RunMacro("Create Transit Net Map", Args.[Road Line Layer], Args.[Transit Route System], period,
+            Args.[Output Folder] + "transit_" + period + ".tnw", Args.[Output Folder] + "transit_" + period + ".map")
     end
 
     return(true)
