@@ -15,11 +15,6 @@
 **/
 
     Section = "Files and Folders"
-        Args.[Base Folder] = {
-                "Type": "Folder",
-                "Description": "Folder containing inputs for this model run",
-                "Value": null
-            }
 
         Args.[Road Line Layer] = {
                 "Type": "file",
@@ -34,4 +29,11 @@
         Args.[Output Folder] = {
             "Type": "folder",
             "Description": "Output folder (will be set automatically)"
+        }
+
+    Section = "Drive Network"
+        Args.[Drive Filter] = {
+            "Type": "string",
+            "Description": "Filter to select links for drive network",
+            "Value": "DTWB contains 'D'"
         }

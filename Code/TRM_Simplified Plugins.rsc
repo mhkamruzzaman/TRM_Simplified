@@ -11,7 +11,7 @@ Macro "Model.Attributes" (Args,Result)
         {"ExpandStages", "Side by Side"},
         {"MinItemSpacing", 5},
         {"MaxProgressBars", 2},
-        {"CodeUI", null},
+        {"CodeUI", "Bin\\TRMS.dbd"},
         {"Base Scenario Name", "Base"},
         {"ClearLogFiles", 1},
         {"CloseOpenFiles", 1},
@@ -20,7 +20,8 @@ Macro "Model.Attributes" (Args,Result)
         {"ReportAfterStep", 0},
         {"Shape", "Rectangle"},
         {"SourceMacro", "Model.Attributes"},
-        {"Time Stamp Format", "yyyyMMdd_HHmm"}
+        {"Time Stamp Format", "yyyyMMdd_HHmm"},
+        {"Output Folder Parameter", "Output Folder"}
     }
 EndMacro
 
@@ -57,6 +58,6 @@ EndMacro
 **/
 Macro "Model.OnModelReady" (Args,Result)
 Body:
-    Return({"Base Folder": "%Model Folder%"})
+    Return({})
 EndMacro
 

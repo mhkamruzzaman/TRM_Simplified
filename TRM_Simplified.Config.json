@@ -9,7 +9,8 @@
 		"Version": null,
 		"Name": "TRM_Simplified.model",
 		"Parameters": [
-			"Parameters\\TRM_Simplified.parameters"
+			"Parameters\\TRM_Simplified.parameters",
+			"local.parameters"
 		],
 		"Styles": [
 			"Parameters\\TRM_Simplified.styles",
