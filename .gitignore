@@ -1,0 +1,6 @@
+Bin/*
+!Bin/.gitkeep
+*.err
+Output/*
+!Output/.gitkeep
+local.parameters
