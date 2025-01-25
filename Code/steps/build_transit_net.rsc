@@ -34,10 +34,28 @@ macro "Build Transit Networks" (Args)
 
     Body:
 
+    on error do
+        ShowMessage(GetLastError())
+        return(false)
+    end
+
     RunMacro("Calculate Bus Speeds", Args.[Road Line Layer], Args.[Bus Speed Table])
 
     for period in {"AM", "MD", "PM", "NT"} do
         RunMacro("Build Transit Network for Period", Args.[Transit Route System], Args.[Output Folder], period)
+
+        AppendToLogFile(1, "Configuring network")
+
+        settings = CreateObject("Network.SetPublicPathFinder",
+            {RS: Args.[Transit Route System], NetworkName: Args.[Output Folder] + "transit_" + period + ".tnw"})
+        settings.UserClasses = {"Yall"}
+        settings.CurrentClass = "Yall"
+        settings.LinkImpedance = "Time"
+        settings.RouteTimeFields({"Headway": "Headway"})
+        settings.GlobalWeights({"Fare": 0}) // take fares out of the weighting
+        settings.Run()
+
+        AppendToLogFile(1, "Mapping network")
 
         RunMacro("Create Transit Net Map", Args.[Road Line Layer], Args.[Transit Route System], period,
             Args.[Output Folder] + "transit_" + period + ".tnw", Args.[Output Folder] + "transit_" + period + ".map")
