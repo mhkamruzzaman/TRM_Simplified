@@ -11,6 +11,10 @@ macro "Initialize TRMS" (Args, Result)
         Args.[Output Folder] = Args.[Base Folder] + "model_run_" + startTimeText + "\\"
         CreateDirectory(Args.[Output Folder])
 
+        // also set in model runtime so it is accessible in postprocessing
+        mr = CreateObject("Model.Runtime")
+        mr.AddResults({"Output Folder": Args.[Output Folder]})
+
         AppendToLogFile(1, "Results will be stored in " + Args.[Output Folder])
 
         return(true)
