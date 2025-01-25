@@ -71,7 +71,7 @@ Macro "Compute Accessibility" (Args, Results)
                     for orig = 1 to access.length do
                         ttimes = GetMatrixVector(skim, { "Row": ids[orig] })
 
-                        destacc = ((ttimes < threshold) * opportunities)
+                        destacc = ((ttimes != null) * (ttimes < threshold) * opportunities)
                         access[orig] = destacc.sum()
                     end
 
