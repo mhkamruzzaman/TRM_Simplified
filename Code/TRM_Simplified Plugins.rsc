@@ -55,9 +55,20 @@ EndMacro
 /**
   This macro will run when the user open a new model file in a TransCAD window.
   You can use it to change the value for some particular parameters.
+
+  In particular here: new output directory each time model is opened.
 **/
 Macro "Model.OnModelReady" (Args,Result)
 Body:
-    Return({})
+    if (Args.[Create New Output Folder Each Run]) then do
+        startTime = CreateDateTime()
+        startTimeText = FormatDateTime(startTime, "yyyy-MM-ddTHH_mm_ss")
+        outdir = Args.[Base Folder] + "\\model_run_" + startTimeText + "\\"
+        end
+    else outdir = Args.[Base Folder] + "\\model_run\\"
+
+    if GetFileInfo(outdir) = null then CreateDirectory(outdir)
+
+    Return({"Output Folder": outdir})
 EndMacro
 

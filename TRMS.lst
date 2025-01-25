@@ -13,3 +13,4 @@ Code/util/create_transit_net_map.rsc
 Code/steps/initialize.rsc
 Code/steps/build_drive_net.rsc
 Code/steps/build_transit_net.rsc
+Code/steps/drive_skims.rsc

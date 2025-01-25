@@ -2,5 +2,11 @@ Section = "Local Config"
     Args.[Base Folder] = {
             "Type": "Folder",
             "Description": "Folder containing inputs for this model run",
-            "Value": "C:\\path\to\Inputs"
+            "Value": "C:\\Users\\mwbc\\Documents\\Inputs"
         }
+
+    Args.[Create New Output Folder Each Run] = {
+        "Type": "bool",
+        "Description": "Should a new output folder be created each time the model is opened?",
+        "Value": true
+    }

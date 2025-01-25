@@ -6,22 +6,22 @@
 Macro "TRM_Simplified" (Args)
 Body:
     // model = FlowChart( { StartNodes } , { EndNodes } , Description)
-    model = FlowChart({"Initialize"},{"Build Transit Networks"},)
+    model = FlowChart({"Build Drive Network"},{"Drive Skims"},)
     //
     // Nodes
     //
     // FlowChartNode(model,NodeName,MacroName,UI,Description)
     //
-    FlowChartNode(model,"Initialize",,,)
     FlowChartNode(model,"Build Drive Network",,,)
     FlowChartNode(model,"Build Transit Networks",,,)
+    FlowChartNode(model,"Drive Skims",,,)
     //
     // Links
     //
     // FlowChartLink(model , FromNode , ToNode , Condition , Description , IsFeedbackLoop)
     //
-    FlowChartLink(model,"Initialize","Build Drive Network",True,,)
     FlowChartLink(model,"Build Drive Network","Build Transit Networks",True,,)
+    FlowChartLink(model,"Build Transit Networks","Drive Skims",True,,)
     Return(model)
 EndMacro
 
@@ -31,17 +31,6 @@ Macro "Build Road Network" (Args,Result)
         {"Class", {"GISDK"}},
         {"MacroNames", { /* "Macro Name 1", ..., "Macro Name n" */ }}
     }
-EndMacro
-
-
-Macro "Initialize" (Args,Result)
-    Attributes = {
-        {"Class", {"GISDK"}},
-        {"MacroNames", {"Initialize TRMS"}}
-    }
-Data:
-    In({ Args.[Base Folder] })
-    Out({ Args.[Output Folder] })
 EndMacro
 
 
@@ -80,5 +69,16 @@ Data:
     In({ Args.[Output Folder] })
     In({ Args.[Road Line Layer] })
     In({ Args.[Transit Route System] })
+EndMacro
+
+
+Macro "Drive Skims" (Args,Result)
+    Attributes = {
+        {"Class", {"GISDK"}},
+        {"MacroNames", {"Calculate All Drive Skims"}}
+    }
+Data:
+    In({ Args.[Output Folder] })
+    In({ Args.[Road Line Layer] })
 EndMacro
 
