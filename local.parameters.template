@@ -1,0 +1,6 @@
+Section = "Local Config"
+    Args.[Base Folder] = {
+            "Type": "Folder",
+            "Description": "Folder containing inputs for this model run",
+            "Value": "C:\\path\to\Inputs"
+        }
