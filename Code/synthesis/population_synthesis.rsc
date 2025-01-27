@@ -462,12 +462,12 @@ Macro "Calculate Auto Ownership" (Args, trip_types)
     obj.OutputModelFile = output_dir + "\\auto_ownership.mdl"
     obj.AddTableSource({
         SourceName: "hh",
-        File: output_dir + "\\Synthesized_HHs.bin",
+        File: Args.Households,
         IDField: "HouseholdID"
     })
     obj.AddTableSource({
         SourceName: "se",
-        File: scen_dir + "\\output\\sedata\\scenario_se.bin",
+        File: Args.SEDMarginals,
         IDField: "TAZ"
     })
     util = RunMacro("Import MC Spec", ao_coeffs)
@@ -485,3 +485,17 @@ Macro "Calculate Auto Ownership" (Args, trip_types)
     SetDataVector(hh_vw + "|", "Autos", v2, )
     CloseView(hh_vw)
 endmacro
+
+// from mc.rsc
+Macro "Import MC Spec"(file)
+    vw = OpenTable("Spec", "CSV", {file,})
+    {flds, specs} = GetFields(vw,)
+    vecs = GetDataVectors(vw + "|", flds, {OptArray: 1})
+    
+    util = null
+    for fld in flds do
+        util.(fld) = v2a(vecs.(fld))
+    end
+    CloseView(vw)
+    Return(util)
+endMacro
