@@ -6,30 +6,22 @@
 Macro "TRM_Simplified" (Args)
 Body:
     // model = FlowChart( { StartNodes } , { EndNodes } , Description)
-    model = FlowChart({"Build Drive Network"},{"Calculate Accessibility"},)
+    model = FlowChart({"Build Networks"},{"Calculate Accessibility"},)
     //
     // Nodes
     //
     // FlowChartNode(model,NodeName,MacroName,UI,Description)
     //
-    FlowChartNode(model,"Build Drive Network",,,)
-    FlowChartNode(model,"Build Transit Networks",,,)
-    FlowChartNode(model,"Drive Skims",,,)
-    FlowChartNode(model,"Transit Skims",,,)
     FlowChartNode(model,"Calculate Accessibility",,,)
-    FlowChartNode(model,"Build Nonmotorized Networks",,,)
-    FlowChartNode(model,"Nonmotorized Skims",,,)
+    FlowChartNode(model,"Build Networks",,,)
+    FlowChartNode(model,"Skimming",,,)
     //
     // Links
     //
     // FlowChartLink(model , FromNode , ToNode , Condition , Description , IsFeedbackLoop)
     //
-    FlowChartLink(model,"Build Drive Network","Build Transit Networks",True,,)
-    FlowChartLink(model,"Drive Skims","Transit Skims",True,,)
-    FlowChartLink(model,"Build Transit Networks","Build Nonmotorized Networks",True,,)
-    FlowChartLink(model,"Build Nonmotorized Networks","Drive Skims",True,,)
-    FlowChartLink(model,"Transit Skims","Nonmotorized Skims",True,,)
-    FlowChartLink(model,"Nonmotorized Skims","Calculate Accessibility",True,,)
+    FlowChartLink(model,"Build Networks","Skimming",True,,)
+    FlowChartLink(model,"Skimming","Calculate Accessibility",True,,)
     Return(model)
 EndMacro
 
@@ -136,5 +128,64 @@ Macro "Nonmotorized Skims" (Args,Result)
 Data:
     In({ Args.[Output Folder] })
     In({ Args.[Road Line Layer] })
+EndMacro
+
+
+Macro "Build Networks" (Args,Result)
+    Attributes = {
+        {"Description", "Stage 1"}
+    }
+Data:
+    In({ Args.[Drive Filter] })
+    In({ Args.[Output Folder] })
+    In({ Args.[Road Line Layer] })
+Body:
+    // model = FlowChart( { StartNodes } , { EndNodes } , Description)
+    model = FlowChart({"Build Drive Network"},{"Build Nonmotorized Networks"},"Group steps")
+    //
+    // Nodes
+    //
+    // FlowChartNode(model,NodeName,MacroName,UI,Description)
+    //
+    FlowChartNode(model,"Build Drive Network",,,)
+    FlowChartNode(model,"Build Transit Networks",,,)
+    FlowChartNode(model,"Build Nonmotorized Networks",,,)
+    //
+    // Links
+    //
+    // FlowChartLink(model , FromNode , ToNode , Condition , Description , IsFeedbackLoop)
+    //
+    FlowChartLink(model,"Build Drive Network","Build Transit Networks",True,,)
+    FlowChartLink(model,"Build Transit Networks","Build Nonmotorized Networks",True,,)
+    Return(model)
+EndMacro
+
+
+Macro "Skimming" (Args,Result)
+    Attributes = {
+        {"Description", "Stage 1"}
+    }
+Data:
+    In({ Args.[Output Folder] })
+    In({ Args.[Road Line Layer] })
+Body:
+    // model = FlowChart( { StartNodes } , { EndNodes } , Description)
+    model = FlowChart({"Drive Skims"},{"Nonmotorized Skims"},"Group steps")
+    //
+    // Nodes
+    //
+    // FlowChartNode(model,NodeName,MacroName,UI,Description)
+    //
+    FlowChartNode(model,"Drive Skims",,,)
+    FlowChartNode(model,"Transit Skims",,,)
+    FlowChartNode(model,"Nonmotorized Skims",,,)
+    //
+    // Links
+    //
+    // FlowChartLink(model , FromNode , ToNode , Condition , Description , IsFeedbackLoop)
+    //
+    FlowChartLink(model,"Drive Skims","Transit Skims",True,,)
+    FlowChartLink(model,"Transit Skims","Nonmotorized Skims",True,,)
+    Return(model)
 EndMacro
 
