@@ -1,36 +1,3 @@
-Macro "TRMG2 Generation" (trmg2dir, outdir)
-    AppendToLogFile(0, "Generating synthetic travel survey data")
-
-    hhfile = RunMacro("Join Path", {outdir, "trmg2_households.bin"})
-    perfile = RunMacro("Join Path", {outdir, "trmg2_persons.bin"})
-
-    Args = {
-        "SE": RunMacro("Join Path", {trmg2dir, "master", "sedata", "se_2020.bin"}),
-        "SizeCurves": RunMacro("Join Path", {trmg2dir, "master", "resident", "disagg_model", "size_curves.csv"}),
-        "IncomeCurves": RunMacro("Join Path", {trmg2dir, "master", "resident", "disagg_model", "income_curves.csv"}),
-        "WorkerCurves": RunMacro("Join Path", {trmg2dir, "master", "resident", "disagg_model", "worker_curves.csv"}),
-        "RegionalMedianIncome": 65317, // copied from TRMG2 params file
-        "TAZs": RunMacro("Join Path", {trmg2dir, "master", "tazs", "master_tazs.dbd"}),
-        "PUMS HH Seed": RunMacro("Join Path", {trmg2dir, "master", "resident", "population_synthesis", "HHSeed_PUMS_TRM.bin"}),
-        "PUMS Person Seed": RunMacro("Join Path", {trmg2dir, "master", "resident", "population_synthesis", "PersonSeed_PUMS_TRM.bin"}),
-        "TAZs": RunMacro("Join Path", {trmg2dir, "master", "tazs", "master_tazs.dbd"}),
-        "Households": hhfile,
-        "Persons": perfile,
-        "SEDMarginals": RunMacro("Join Path", {outdir, "marginals.bin"}),
-        "Synthesized Tabulations": RunMacro("Join Path", {outdir, "tabulations.bin"}),
-        "AOCoeffs": RunMacro("Join Path", {trmg2dir, "master", "resident\\auto_ownership\\ao_coefficients.csv"})
-    }
-
-    AppendToLogFile(1, "Disggregate SED")
-    RunMacro("Disaggregate Curves", Args)
-
-    AppendToLogFile(1, "Population synthesis")
-    RunMacro("IPU Synthesis", Args)
-
-    AppendToLogFile(1, "Auto ownership")
-    RunMacro("Auto Ownership", Args)
-endmacro
-
 Macro "Convert TRMG2 results to CSV and OMX" (outputdir)    
     RunMacro("Convert Matrices", {outputdir, "resident", "dc", "probabilities"})
     RunMacro("Convert Matrices", {outputdir, "resident", "mode", "probabilities"})
