@@ -150,36 +150,9 @@ menu "TRM_Simplified Menu"
 endMenu 
 
 menu "Advanced Utilities Menu"
-    MenuItem "TRMG2 Synthetic Generation" dbox "TRMG2 Synthetic Generation"
     MenuItem "Convert TRMG2 results to CSV and OMX" dbox "Convert TRMG2 results to CSV and OMX"
 
 endmenu
-
-DBox "TRMG2 Synthetic Generation"
-    Button "TRMG2 Folder" 0, 0 do
-        trmg2dir = ChooseFolder("Choose TRMG2 Path", null)
-    enditem
-
-    Edit Text "TRMG2 Path" after, same variable: trmg2dir
-
-    Button "Output Folder" 0, after do
-        outdir = ChooseFolder("Choose Output Folder", null)
-    enditem
-
-    Edit Text "Output Folder" after, same variable: outdir
-
-    Button "OK" 0, after default do
-        // find the macro inside the model UI DB
-        mr = CreateObject("Model.Runtime")
-        // Ex means do not need scenario specified
-        mr.RunCodeEx("TRMG2 Generation", trmg2dir, outdir)
-        return()
-    endItem
-
-    Button "Cancel" after, same cancel do
-        return()
-    endItem
-EndDBox
 
 DBox "Convert TRMG2 results to CSV and OMX"
     Button "Output Folder" 0, after do
