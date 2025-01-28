@@ -1,0 +1,397 @@
+```{julia}
+using OpenMatrix, DataFrames, CSV, DataFramesMeta, Random, Dates, StatsBase, Logging, CategoricalArrays
+import YAML
+
+cfg = YAML.load_file(joinpath(@__DIR__, "config.yaml"))["default"]
+DATA_DIR = cfg["data-folder"]
+```
+
+Load up households and persons.
+
+```{julia}
+hh = CSV.read(joinpath(DATA_DIR, "population_synthesis", "Synthesized_HHs.csv"), DataFrame);
+
+hh = hh[.!ismissing.(hh.veh_per_adult), :]
+
+hh.segment = map(zip(hh.veh_per_adult, hh.HiIncome)) do (v, i)
+    if v == 0
+        "v0"
+    elseif v < 1 && i == 1
+        "ihvi"
+    elseif v < 1 && i == 0
+        "ilvi"
+    elseif v >= 1 && i == 1
+        "ihvs"
+    else
+        "ilvs"
+    end
+end
+
+per = CSV.read(joinpath(DATA_DIR, "population_synthesis", "Synthesized_Persons.csv"), DataFrame);
+
+println("Read $(nrow(hh)) HHs, $(nrow(per)) persons")
+```
+
+
+```{julia}
+rng = Random.Xoshiro(3314)
+
+hh.sampweights = ones(Float64, nrow(hh))
+hh.sampweights[hh.segment .== "v0"] .*= 0.75
+hh.sampweights[hh.HHInc .< 25000] .*= 0.75
+hh.sampweights[hh.HHKids .>= 1] .*= 0.75
+hh.sampweights[hh.HHSeniors .>= 1] .*= 2
+
+hh.sampweights .*= 1 .+ rand(rng, nrow(hh)) .* 0.2
+
+# convert to probability
+hh.sampweights = hh.sampweights ./ sum(hh.sampweights) .* 5000
+
+hh = hh[StatsBase.sample(rng, 1:nrow(hh), weights(hh.sampweights), 5000), :]
+
+hh.Weight = 1 ./ hh.sampweights
+
+hh = @select(hh, Not([:WEIGHT, :sampweights]))
+
+per = @chain per begin
+    innerjoin(@select(hh, Not(:market_segment)), on=:HouseholdID)
+end
+
+```
+
+## Generate home based trips
+
+```{julia}
+
+function sample_dest_zone(rng, orig_zone, dc_probs)
+    dest_dc_probs_cumulative = cumsum(dc_probs[orig_zone, :])
+    didx = findfirst(dest_dc_probs_cumulative .> rand(rng))
+    dc_probs.collookup.index[didx]
+end
+
+function sample_mode(rng, orig_zone, dest_zone, mode_probs)
+    modes = collect(keys(mode_probs))
+    probs = cumsum(map(m -> mode_probs[m][orig_zone, dest_zone], modes))
+    modes[findfirst(probs .> rand(rng))]
+end
+
+sample_time(rng, f, t) = rand(rng, f:Minute(1):t)
+
+function get_start_time(rng, period)
+    if period == "AM"
+        sample_time(rng, Time(7, 0), Time(9, 0))
+    elseif period == "MD"
+        sample_time(rng, Time(9, 0), Time(15, 30))
+    elseif period == "PM"
+        sample_time(rng, Time(15, 30), Time(18, 15))
+    else
+        [
+            sample_time(rng, Time(0, 0), Time(5, 30)),
+            sample_time(rng, Time(5, 30), Time(7, 0)),
+            sample_time(rng, Time(18, 15), Time(23, 59))
+        ][findfirst([0.2, 0.6, 1.0] .> rand(rng))]
+    end
+end
+
+function stochastic_round(rng, val)
+    frac = val % 1
+
+    rand(rng) < frac ? ceil(Int64, val) : floor(Int64, val)
+end
+
+gettriptype(tt) = match(r"[WN]_HB_[^_]+_(Long|Short|All)", tt).match
+get_purp(tt) = match(r"(?<=[WN]_HB_)[^_]+", tt).match
+
+function generate_trips(rng, per, full_triptype, segment)
+    triptype = gettriptype(full_triptype)
+
+    people = per[per.segment .== segment, :]
+
+    tbls = []
+
+    for (period, prob, pafac) in [
+        ("AM", 0.3, 0.2),
+        ("MD", 0.25, 0.5),
+        ("PM", 0.3, 0.8),
+        ("NT", 0.15, 0.05)]
+
+        tripcount = stochastic_round.(rng, people[!, triptype] .* prob)
+
+        if !isfile(joinpath(DATA_DIR, "dc", "probability_$(triptype)_$(segment)_$(period)_zone.omx"))
+            segment = segment[3:4] # not income split
+        end
+
+        dc = OMXFile(joinpath(DATA_DIR, "dc", "probability_$(triptype)_$(segment)_$(period)_zone.omx"))
+        dc_probs = lookup(dc["final_prob"], dc.lookup["Origins"], dc.lookup["Destinations"])
+        dc_probs.matrix.matrix[dc_probs.matrix.matrix .< 0] .= 0
+
+        mode_prob_file = OMXFile(joinpath(DATA_DIR, "mode", "probability_$(triptype)_$(segment)_$(period).omx"))
+
+        mode_probs = Dict(
+            map(keys(mode_prob_file)) do m
+                p = lookup(mode_prob_file[m], mode_prob_file.lookup["Origins"], mode_prob_file.lookup["Destinations"])
+                p.matrix.matrix[p.matrix.matrix .< 0] .= 0
+                m => p
+            end
+        )
+
+        # repeat each person the correct number of trips times
+        indices = inverse_rle(1:nrow(people), tripcount)
+
+        trips = DataFrame(
+            :HouseholdID => people.HouseholdID[indices],
+            :PersonID => people.PersonID[indices],
+            :Origin => people.ZoneID[indices]
+        )
+
+        trips.Destination = sample_dest_zone.(rng, trips.Origin, Ref(dc_probs))
+        trips.Mode = sample_mode.(rng, trips.Origin, trips.Destination, Ref(mode_probs))
+        trips.Period .= period
+        trips.Purpose .= get_purp(full_triptype)
+
+        toflip = rand(rng, nrow(trips)) .< pafac
+
+        flipped_origins = ifelse.(toflip, trips.Destination, trips.Origin)
+        flipped_dests = ifelse.(toflip, trips.Origin, trips.Destination)
+
+        trips.Origin = flipped_origins
+        trips.Destination = flipped_dests
+
+        push!(tbls, trips)
+    end
+
+    return vcat(tbls...)
+end
+
+```
+
+```{julia}
+hbtriptypes = filter(x -> occursin(r"^[NW]_HB", x), names(per))
+mtriptypes = collect(filter(x -> !endswith(x, "nm"), hbtriptypes))
+
+mtrips = vcat(map(Iterators.product(mtriptypes, collect(unique(per.segment)))) do (tt, seg)
+    Logging.@info("$(tt), $(seg)")
+    generate_trips(rng, per, tt, seg)
+end...)
+
+# mtrips.Period = CategoricalArray(mtrips.Period, ordered=true)
+# levels!(mtrips.Period, ["AM", "MD", "PM", "NT"])
+
+# sort!(mtrips, [:HouseholdID, :PersonID, :Period])
+
+# mtrips.Mode[mtrips.Mode .∈ Ref(["w_lb", "w_eb", "knr_lb", "knr_eb", "pnr_lb", "pnr_eb"])] .= "transit"
+# mtrips.Mode[mtrips.Mode .∈ Ref(["hov2", "hov3"])] .= "hov"
+# mtrips.Mode[mtrips.Mode .∈ Ref(["auto_pay"])] .= "sov"
+# mtrips.Mode[mtrips.Mode .∈ Ref(["other_auto"])] .= "hov"
+```
+
+## Nonmotorized home-based trips
+
+TRMG2 gives us the count of nonmotorized home based trips. We need to choose destinations and modes (bike or walk). The way we do this is pretty kludgy: we first decided if it will be a bike or walk trip (15% probability bike 85% probability walk). Then we pick a zone based on the skims.
+
+```{julia}
+nm_triptypes = filter(x -> occursin(r"^[WN]_.*_nm$", x), names(per))
+
+function sample_dest_zone_ne(rng, origin, skim)
+    # -0.00132 is ne cutoff from the mssing links paper. it is for walk distance in meters so we
+    # kludgily convert time in minutes into something similar.
+    dest_ne_weights = exp.(-0.00132 * skim[origin, :] * 60 * 1.3)
+    skim.collookup.index[sample(rng, 1:length(dest_ne_weights), weights(dest_ne_weights))]
+end
+
+function generate_nm_trips(rng, per, triptype)
+    tbls = []
+
+    for mode ∈ ["bike", "walk"]
+        modeprob = mode == "bike" ? 0.1 : 0.9
+
+        skimfile = OMXFile(joinpath(DATA_DIR, "skims", "nonmotorized", "$(mode)_skim.omx"))
+        skim = lookup(skimfile["$(titlecase(mode))Time"], skimfile.lookup["Origin"], skimfile.lookup["Destination"])
+
+        skim.matrix.matrix[skim.matrix.matrix .< 0] .= 100_000
+
+        for (period, prob, pafac) in [
+            ("AM", 0.3, 0.2),
+            ("MD", 0.25, 0.5),
+            ("PM", 0.3, 0.8),
+            ("NT", 0.15, 0.05)]
+
+            tripcount = stochastic_round.(rng, per[!, triptype] .* modeprob .* prob)
+
+            indices = inverse_rle(1:nrow(per), tripcount)
+
+            trips = DataFrame(
+                :HouseholdID => per.HouseholdID[indices],
+                :PersonID => per.PersonID[indices],
+                :Origin => per.ZoneID[indices]
+            )
+
+            trips.Destination = sample_dest_zone_ne.(rng, trips.Origin, Ref(skim))
+            trips.Mode .= mode
+            trips.Period .= period
+            trips.Purpose .= get_purp(triptype)
+
+            toflip = rand(rng, nrow(trips)) .< pafac
+
+            flipped_origins = ifelse.(toflip, trips.Destination, trips.Origin)
+            flipped_dests = ifelse.(toflip, trips.Origin, trips.Destination)
+
+            trips.Origin = flipped_origins
+            trips.Destination = flipped_dests
+
+            push!(tbls, trips)
+        end
+    end
+
+    return vcat(tbls...)
+end
+
+
+nmtrips = vcat(map(x -> generate_nm_trips(rng, per, x), nm_triptypes)...)
+```
+
+```{julia}
+hbtrips = vcat(mtrips, nmtrips)
+```
+
+## Non-home-based trips
+
+Non-home-based trips are tricky, because in the TRM they are generated after aggregation. So we just look at the trip matrices, find a person that has a trip that ends in that zone, and then give them that trip. We assign them purposes based on the unconditional purpose distribution.
+
+```{julia}
+
+function create_nhb_trips(rng, trips)
+    NHBTrip = @NamedTuple begin
+        HouseholdID::Int32
+        PersonID::Int32
+        Origin::Int32
+        Destination::Int32
+        Mode::String
+        Period::String
+    end
+    nhb_trips = NHBTrip[]
+
+    nhb_skims = readdir(joinpath(DATA_DIR, "nhb"))
+    for skimfn in nhb_skims
+        @info skimfn
+
+        mode = match(r"NHB_([nw]_)?(.+)(?=_[A-Z]{2}.omx)", skimfn).captures[2]
+        period = match(r"[A-Z]{2}(?=.omx)", skimfn).match
+
+        skimfile = OMXFile(joinpath(DATA_DIR, "nhb", skimfn))
+        skim = lookup(skimfile["Total"], skimfile.lookup["Origins"], skimfile.lookup["Destinations"])
+
+        for origin in skim.rowlookup.index
+            # randomly choose someone with a trip that ends in origin zone or starts in origin zone
+            # previously used dest zone, too slow. this still gets trips that are nearby.
+            candidates = trips[trips.Origin .== origin .|| trips.Destination .== origin, :]
+
+            if nrow(candidates) == 0
+                candidates = trips
+            end
+
+            # scale down to account for sampling
+            destcounts = stochastic_round.(rng, skim[origin, :] * 5000 / 801000)
+            dests = inverse_rle(skim.collookup.index, destcounts)
+            for dest in dests
+                idx = sample(rng, 1:nrow(candidates))
+
+                push!(nhb_trips, (
+                    HouseholdID = candidates[idx, :HouseholdID],
+                    PersonID = candidates[idx, :HouseholdID],
+                    Origin = origin,
+                    Destination = dest,
+                    Mode = mode,
+                    Period = period
+                ))
+            end
+        end
+    end
+
+    nhbdf = DataFrame(nhb_trips)
+    nhbdf.Purpose = sample(rng, trips.Purpose, nrow(nhbdf))
+
+    return nhbdf
+end
+
+nhbtrips = create_nhb_trips(rng, hbtrips)
+```
+
+## Assign times
+
+We assign start times to every trip, the look in the skims to assign end times.
+
+We then move overlapping trips later in the day.
+
+```{julia}
+trips = vcat(hbtrips, nhbtrips)
+
+trips.StartTime = get_start_time.(rng, trips.Period)
+trips.EndTime = trips.StartTime + Minute(10)
+
+# simplify modes
+#trips.Mode[trips.Mode .∈ Ref(["w_lb", "w_eb", "knr_lb", "knr_eb", "pnr_lb", "pnr_eb"])] .= "transit"
+trips.Mode[trips.Mode .∈ Ref(["hov2", "hov3"])] .= "hov"
+trips.Mode[trips.Mode .∈ Ref(["auto_pay"])] .= "sov"
+trips.Mode[trips.Mode .∈ Ref(["other_auto"])] .= "hov"
+trips.Mode[trips.Mode .== "walkbike"] .= "walk" # punt - all nhb nm trips are walk why not
+
+for mode in unique(trips.Mode)
+    for period in unique(trips.Period)
+        @info "$mode, $period"
+        skim = if mode in ["sov", "hov"]
+            skimfile = OMXFile(joinpath(DATA_DIR, "skims", "roadway", "skim_$(mode)_$(period).omx"))
+            lookup(skimfile["CongTime"], skimfile.lookup["Origin"], skimfile.lookup["Destination"])
+        elseif mode ∈ ["w_lb", "w_eb", "knr_lb", "knr_eb", "pnr_lb", "pnr_eb"]
+            skimfile = OMXFile(joinpath(DATA_DIR, "skims", "transit", "skim_$(period)_$(mode).omx"))
+            lookup(skimfile["Total Time"], skimfile.lookup["RCIndex"], skimfile.lookup["RCIndex"])
+        elseif mode == "transit"
+             skimfile = OMXFile(joinpath(DATA_DIR, "skims", "transit", "skim_$(period)_w_all.omx"))
+            lookup(skimfile["Total Time"], skimfile.lookup["RCIndex"], skimfile.lookup["RCIndex"])       
+        elseif mode == "school_bus"
+            # 
+            skimfile = OMXFile(joinpath(DATA_DIR, "skims", "nonmotorized", "bike_skim.omx"))
+            lookup(skimfile["BikeTime"], skimfile.lookup["Origin"], skimfile.lookup["Destination"])
+        else
+            skimfile = OMXFile(joinpath(DATA_DIR, "skims", "nonmotorized", "$(mode)_skim.omx"))
+            lookup(skimfile["$(titlecase(mode))Time"], skimfile.lookup["Origin"], skimfile.lookup["Destination"])
+        end
+        
+        indices = collect(1:nrow(trips))[trips.Mode .== mode .&& trips.Period .== period]
+        for index in indices
+            time = skim[trips[index, :Origin], trips[index, :Destination]]
+            if time < 0.0
+                time = 30.0
+            end
+            trips[index, :EndTime] = trips[index, :StartTime] + Minute(round(Int64, time))
+        end
+    end
+end
+```
+
+Move trips to make them fit.
+
+```{julia}
+sort!(trips, [:HouseholdID, :PersonID, :StartTime])
+
+for idx in 2:nrow(trips)
+    if trips[idx, :PersonID] == trips[idx - 1, :PersonID] && trips[idx, :StartTime] - Minute(5) < trips[idx - 1, :EndTime]
+        # these trips overlap
+        offset = trips[idx - 1, :EndTime] - trips[idx, :StartTime] + Minute(5)
+        trips[idx, :EndTime] += offset
+        trips[idx, :StartTime] += offset
+    end
+end
+
+# Period might not be right anymore
+trips = @select(trips, Not(:Period))
+```
+
+## Phew. Write out.
+
+```{julia}
+CSV.write(joinpath(DATA_DIR, "triangle_hh.csv"), hh)
+CSV.write(joinpath(DATA_DIR, "triangle_person.csv"), per)
+CSV.write(joinpath(DATA_DIR, "triangle_trips.csv"), trips)
+```
+
