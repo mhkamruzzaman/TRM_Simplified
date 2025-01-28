@@ -31,6 +31,8 @@ macro "Build Transit Networks" (Args)
         In({Args.[Road Line Layer]})
         In({Args.[Output Folder]})
         In({Args.[Bus Speed Table]})
+        In({Args.[Bike Speed MPH]})
+        In({Args.[Walk Speed MPH]})
 
     Body:
 
@@ -39,7 +41,7 @@ macro "Build Transit Networks" (Args)
         return(false)
     end
 
-    RunMacro("Calculate Bus Speeds", Args.[Road Line Layer], Args.[Bus Speed Table])
+    RunMacro("Calculate Bus Speeds", Args.[Road Line Layer], Args.[Bus Speed Table], Args.[Walk Speed MPH], Args.[Bike Speed MPH])
 
     for period in {"AM", "MD", "PM", "NT"} do
         RunMacro("Build Transit Network for Period", Args.[Transit Route System], Args.[Output Folder], period)
