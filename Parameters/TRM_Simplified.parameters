@@ -51,6 +51,17 @@
             "Value": "DTWB contains 'D'"
         }
 
+    Section = "Nonmotorized"
+        Args.[Walk Speed MPH] = {
+            "Type": "real",
+            "Value": 2.5
+        }
+
+        Args.[Bike Speed MPH] = {
+            "Type": "real",
+            "Value": 9.0
+        }
+
 
     Section = "Accessibility"
         Args.[Cumulative Opportunity Cutoff Minutes] = {

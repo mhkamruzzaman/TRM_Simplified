@@ -18,6 +18,7 @@ Body:
     FlowChartNode(model,"Transit Skims",,,)
     FlowChartNode(model,"Calculate Accessibility",,,)
     FlowChartNode(model,"Build Nonmotorized Networks",,,)
+    FlowChartNode(model,"Nonmotorized Skims",,,)
     //
     // Links
     //
@@ -25,9 +26,10 @@ Body:
     //
     FlowChartLink(model,"Build Drive Network","Build Transit Networks",True,,)
     FlowChartLink(model,"Drive Skims","Transit Skims",True,,)
-    FlowChartLink(model,"Transit Skims","Calculate Accessibility",True,,)
     FlowChartLink(model,"Build Transit Networks","Build Nonmotorized Networks",True,,)
     FlowChartLink(model,"Build Nonmotorized Networks","Drive Skims",True,,)
+    FlowChartLink(model,"Transit Skims","Nonmotorized Skims",True,,)
+    FlowChartLink(model,"Nonmotorized Skims","Calculate Accessibility",True,,)
     Return(model)
 EndMacro
 
@@ -95,7 +97,7 @@ Macro "Transit Skims" (Args,Result)
     Attributes = {
         {"Class", {"GISDK"}},
         {"MacroNames", {"Calculate Transit Skims"}},
-        {"Text", "Calculate Transit Skims"}
+        {"Text", "Transit Skims"}
     }
 Data:
     In({ Args.[Output Folder] })
@@ -119,6 +121,17 @@ Macro "Build Nonmotorized Networks" (Args,Result)
     Attributes = {
         {"Class", {"GISDK"}},
         {"MacroNames", {"Build Nonmotorized Networks"}}
+    }
+Data:
+    In({ Args.[Output Folder] })
+    In({ Args.[Road Line Layer] })
+EndMacro
+
+
+Macro "Nonmotorized Skims" (Args,Result)
+    Attributes = {
+        {"Class", {"GISDK"}},
+        {"MacroNames", {"Calculate Nonmotorized Skims"}}
     }
 Data:
     In({ Args.[Output Folder] })

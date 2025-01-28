@@ -1,6 +1,6 @@
 /* Create a matrix index to match up to the indices of socioeconomic data */
 Macro "Index Matrix" (matrix, se_view, se_idcol)
-    taz_index = CreateMatrixIndex("Internal__TAZ__________ID", matrix, "Both", se_view + "|", se_idcol, ,)
+    taz_index = CreateMatrixIndex("TAZ", matrix, "Both", se_view + "|", se_idcol, ,)
     return(taz_index)
 endmacro
 
@@ -33,6 +33,15 @@ Macro "Compute Accessibility" (Args, Results)
         end
     end
 
+    for mode in {"bike", "walk"} do
+        for col in {"Retail", "Service_RateLow", "Service_RateHigh", "Office"} do
+            for threshold in thresholds do
+                columns = columns + {{"Access_" + mode + "_All_" + col + "_" + String(threshold), "Real", 12, 2, 0,
+                    "Access to jobs in " + col + " by " + mode + " during any period within " + String(threshold) + " minutes"}}
+            end
+        end
+    end
+
     o = CreateObject("CC.Table")
     tableObj = o.Create({
         Filename: Args.[Output Folder] + "access.bin",
@@ -47,13 +56,16 @@ Macro "Compute Accessibility" (Args, Results)
     ids = CopyVector(GetDataVector(se + "|", "ID",))
     SetDataVector(table + "|", "ID", ids,)
 
-    for mode in {"auto", "transit"} do
-        for period in {"AM", "MD", "PM", "NT"} do
+    for mode in {"auto", "transit", "bike", "walk"} do
+        if mode = "bike" or mode = "walk" then periods = {"All"}
+        else periods = {"AM", "MD", "PM", "NT"}
+        for period in periods do
             skimmtx = OpenMatrix(Args.[Output Folder] + mode + "_skims_" + period + ".mtx", )
 
             idx = RunMacro("Index Matrix", skimmtx, se, "ID")
 
             if mode = "transit" then core = "Total Time"
+            else if mode = "bike" or mode = "walk" then core = "Time"
             else core = "Time" + period
 
             skim = CreateMatrixCurrency(skimmtx, core, idx, idx,)

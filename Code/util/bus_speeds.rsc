@@ -23,9 +23,9 @@ enddbox
 
 /*
 Calculate bus speeds as a fraction of auto speeds, based on roadway type, using a simplified version
-of the factors used in the TRMG2 model (not using area type though).
+of the factors used in the TRMG2 model (not using area type though). Also calculate walk and bike speeds.
 */
-Macro "Calculate Bus Speeds" (out_dbd, speed_table)
+Macro "Calculate Bus Speeds" (out_dbd, speed_table, walk_speed, bike_speed)
     {nlyr, llyr} = GetDBLayers(out_dbd)
     llyr = AddLayerToWorkspace(llyr, out_dbd, llyr)  
 
@@ -46,6 +46,7 @@ Macro "Calculate Bus Speeds" (out_dbd, speed_table)
     end
 
     a_fields = a_fields + {{"WalkTime", "Real", 10, 2, , , , "Walk time"}}
+    a_fields = a_fields + {{"BikeTime", "Real", 10, 2, , , , "Bike time"}}
 
     RunMacro("Add Fields", {
         view: llyr,
@@ -79,7 +80,9 @@ Macro "Calculate Bus Speeds" (out_dbd, speed_table)
     // also do walk speeds
     lengths = GetDataVector(jv + "|", llyr_specs.[Length], )
     // assume 2.9 mph
-    SetDataVector(jv + "|", llyr_specs.WalkTime, lengths / 2.9 * 60, )
+    SetDataVector(jv + "|", llyr_specs.WalkTime, lengths / walk_speed * 60, )
+
+    SetDataVector(jv + "|", llyr_specs.BikeTime, lengths / bike_speed * 60, )
 
     CloseView("jv")
     CloseView("speed_table")
