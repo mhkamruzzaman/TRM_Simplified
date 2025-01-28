@@ -17,15 +17,17 @@ Body:
     FlowChartNode(model,"Drive Skims",,,)
     FlowChartNode(model,"Transit Skims",,,)
     FlowChartNode(model,"Calculate Accessibility",,,)
+    FlowChartNode(model,"Build Nonmotorized Networks",,,)
     //
     // Links
     //
     // FlowChartLink(model , FromNode , ToNode , Condition , Description , IsFeedbackLoop)
     //
     FlowChartLink(model,"Build Drive Network","Build Transit Networks",True,,)
-    FlowChartLink(model,"Build Transit Networks","Drive Skims",True,,)
     FlowChartLink(model,"Drive Skims","Transit Skims",True,,)
     FlowChartLink(model,"Transit Skims","Calculate Accessibility",True,,)
+    FlowChartLink(model,"Build Transit Networks","Build Nonmotorized Networks",True,,)
+    FlowChartLink(model,"Build Nonmotorized Networks","Drive Skims",True,,)
     Return(model)
 EndMacro
 
@@ -56,10 +58,12 @@ Macro "Build Transit Networks" (Args,Result)
         {"MacroNames", {"Build Transit Networks"}}
     }
 Data:
+    In({ Args.[Bike Speed MPH] })
     In({ Args.[Bus Speed Table] })
     In({ Args.[Output Folder] })
     In({ Args.[Road Line Layer] })
     In({ Args.[Transit Route System] })
+    In({ Args.[Walk Speed MPH] })
 EndMacro
 
 
@@ -108,5 +112,16 @@ Data:
     In({ Args.[Cumulative Opportunity Cutoff Minutes] })
     In({ Args.[Output Folder] })
     In({ Args.[TAZ File] })
+EndMacro
+
+
+Macro "Build Nonmotorized Networks" (Args,Result)
+    Attributes = {
+        {"Class", {"GISDK"}},
+        {"MacroNames", {"Build Nonmotorized Networks"}}
+    }
+Data:
+    In({ Args.[Output Folder] })
+    In({ Args.[Road Line Layer] })
 EndMacro
 

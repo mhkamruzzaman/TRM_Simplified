@@ -15,6 +15,7 @@ Code/synthesis/trmg2_synthetic_generation.rsc
 Code/steps/initialize.rsc
 Code/steps/build_drive_net.rsc
 Code/steps/build_transit_net.rsc
+Code/steps/build_nm_net.rsc
 Code/steps/drive_skims.rsc
 Code/steps/transit_skims.rsc
 Code/steps/accessibility.rsc

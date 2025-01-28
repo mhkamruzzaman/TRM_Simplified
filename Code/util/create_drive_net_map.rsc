@@ -1,9 +1,9 @@
 // Create a map file for the drive network
-macro "Create Drive Network Map" (line_layer, filter, netfile, outfile)
-    AppendToLogFile(2, "Create Drive Network Map")
+macro "Create Road Network Map" (line_layer, mode, filter, netfile, outfile)
+    AppendToLogFile(2, "Create Road Network Map")
 
     info = GetDBInfo(line_layer)
-    map = CreateMap("Drive Network", {scope: info[1]})
+    map = CreateMap(mode + " Network", {scope: info[1]})
     links = AddLayer(map, "Links", line_layer, "master_links", {"Read Only": true})
     nodes = AddLayer(map, "Nodes", line_layer, "master_nodes", {"Read Only": true})
 
@@ -11,10 +11,10 @@ macro "Create Drive Network Map" (line_layer, filter, netfile, outfile)
 
     // highlight the drive links
     SetView(links)
-    driveLinks = CreateSet("Drive Links")
+    modeLinks = CreateSet(mode + " Links")
 
     // several means new selection set (why?)
-    SelectByQuery(driveLinks, "several", "SELECT * WHERE " + filter)
+    SelectByQuery(modeLinks, "several", "SELECT * WHERE " + filter)
 
     AppendToLogFile(3, "Selected drive links")
 
@@ -22,9 +22,9 @@ macro "Create Drive Network Map" (line_layer, filter, netfile, outfile)
     SetDisplayStatus(, "Invisible")
 
     // show drive links
-    SetDisplayStatus(driveLinks, "Active")
+    SetDisplayStatus(modeLinks, "Active")
 
-    AppendToLogFile(3, "Showed only drive links")
+    AppendToLogFile(3, "Showed only mode links")
 
     // load network
     SetMapNetworkFileName(map, netfile)
