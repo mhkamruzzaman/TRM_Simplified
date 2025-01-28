@@ -34,6 +34,17 @@ endmacro
 Macro "Convert TRMG2 results to CSV and OMX" (outputdir)    
     RunMacro("Convert Matrices", {outputdir, "resident", "dc", "probabilities"})
     RunMacro("Convert Matrices", {outputdir, "resident", "mode", "probabilities"})
+
+    RunMacro("Convert Matrices", {outputdir, "skims", "roadway"})
+    RunMacro("Convert Matrices", {outputdir, "skims", "transit"})
+    RunMacro("Convert Matrices", {outputdir, "skims", "nonmotorized"})
+
+    RunMacro("Convert Matrices", {outputdir, "resident", "trip_matrices"})
+    RunMacro("Convert Matrices", {outputdir, "resident", "nhb", "dc", "trip_matrices"})
+
+    RunMacro("Convert Matrices", {outputdir, "resident", "nhb", "dc", "probabilities"})
+    RunMacro("Convert Tables", {outputdir, "resident", "nhb", "generation"})
+
     RunMacro("Convert Tables", {outputdir, "resident", "population_synthesis"})
     RunMacro("Convert Tables", {outputdir, "resident", "nonmotorized"})
 endmacro
@@ -72,7 +83,7 @@ Macro "Convert Tables" (dir)
     for file in files do
         fn = RunMacro("Join Path", {dirpath, file[1]})
         v = OpenTable("table", "FFB", {fn, },)
-        ExportView(v + "|", "CSV", fn.replace("bin$", "csv"),,)
+        ExportView(v + "|", "CSV", fn.replace("bin$", "csv"),, {"CSV Header": "True"})
         CloseView(v)
     end
 endmacro
