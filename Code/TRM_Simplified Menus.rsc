@@ -1,24 +1,10 @@
 
 Class "Visualize.Menu.Items"
+EndClass
 
-    init do 
-        self.runtimeObj = CreateObject("Model.Runtime")
-    enditem 
-    
-    Macro "GetMenus" do
-        Menus = {
-					{ ID: "M1", Title: "Show Selected Param Info" , Macro: "SelectedParamInfo" }
-				}
-        Return(Menus)
-    enditem 
 
-    Macro "SelectedParamInfo" do
-        ShowArray({ SelectedParamInfo: self.runtimeObj.GetSelectedParamInfo() })
-        enditem  
- 
-endClass 
-
-Macro "Open Drive Network"
+Macro "Open Drive Network" (Args,Result)
+Body:
     AppendToLogFile(0, "Open Drive Network")
 	mr = CreateObject("Model.Runtime")
     lay = mr.GetValue("Road Line Layer")
@@ -56,9 +42,11 @@ Macro "Open Drive Network"
     SetMapNetworkFileName(map, output_folder + "auto.net")
 
     AppendToLogFile(1, "Read network")
-endMacro
+EndMacro
+
 
 Macro "Open Transit Network" (period)
+Body:
 
     AppendToLogFile(0, "Open Drive Network")
 	mr = CreateObject("Model.Runtime")
@@ -122,7 +110,8 @@ Macro "Open Transit Network" (period)
 
     AppendToLogFile(1, "Read network")
 
-endMacro
+EndMacro
+
 
 MenuItem "TRM_Simplified Menu Item" text: "TRM Simplified"
     menu "TRM_Simplified Menu"
@@ -148,30 +137,12 @@ menu "TRM_Simplified Menu"
     MenuItem "Advanced Utilities" text: "Advanced Utilities"
         menu "Advanced Utilities Menu"
 endMenu 
-
 menu "Advanced Utilities Menu"
     MenuItem "Convert TRMG2 results to CSV and OMX" dbox "Convert TRMG2 results to CSV and OMX"
 
 endmenu
-
-DBox "Convert TRMG2 results to CSV and OMX"
-    Button "Output Folder" 0, after do
-        outdir = ChooseFolder("Choose Output Folder", null)
-    enditem
-
-    Edit Text "Output Folder" after, same variable: outdir
-
-    Button "OK" 0, after default do
         // find the macro inside the model UI DB
-        mr = CreateObject("Model.Runtime")
         // Ex means do not need scenario specified
-        mr.RunCodeEx("Convert TRMG2 results to CSV and OMX", outdir)
-        return()
-    endItem
 
-    Button "Cancel" after, same cancel do
-        return()
-    endItem
-EndDBox
 
 
