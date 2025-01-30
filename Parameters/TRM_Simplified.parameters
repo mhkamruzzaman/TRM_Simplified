@@ -38,6 +38,12 @@
             "Description": "TAZ/sociodemographic file",
             "Value": "%Base Folder%\\Socioeconomics\\tazs_2020_geog.dbd"
         }
+
+        Args.[TAZ Segment Counts] = {
+            "Type": "file",
+            "Descripton": "TAZ household segment counts",
+            "Value": "%Base Folder%\\Socioeconomics\\taz_segment_counts.csv"
+        }
         
         Args.[Output Folder] = {
             "Type": "folder",

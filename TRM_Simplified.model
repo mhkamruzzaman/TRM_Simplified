@@ -6,7 +6,7 @@
 Macro "TRM_Simplified" (Args)
 Body:
     // model = FlowChart( { StartNodes } , { EndNodes } , Description)
-    model = FlowChart({"Build Networks"},{"Calculate Accessibility"},)
+    model = FlowChart({"Build Networks"},{"Production"},)
     //
     // Nodes
     //
@@ -15,6 +15,7 @@ Body:
     FlowChartNode(model,"Calculate Accessibility",,,)
     FlowChartNode(model,"Build Networks",,,)
     FlowChartNode(model,"Skimming",,,)
+    FlowChartNode(model,"Production",,,)
     //
     // Links
     //
@@ -22,6 +23,7 @@ Body:
     //
     FlowChartLink(model,"Build Networks","Skimming",True,,)
     FlowChartLink(model,"Skimming","Calculate Accessibility",True,,)
+    FlowChartLink(model,"Calculate Accessibility","Production",True,,)
     Return(model)
 EndMacro
 
@@ -187,5 +189,17 @@ Body:
     FlowChartLink(model,"Drive Skims","Transit Skims",True,,)
     FlowChartLink(model,"Transit Skims","Nonmotorized Skims",True,,)
     Return(model)
+EndMacro
+
+
+Macro "Production" (Args,Result)
+    Attributes = {
+        {"Class", {"GISDK"}},
+        {"MacroNames", {"Trip Production"}}
+    }
+Data:
+    In({ Args.[Model Folder] })
+    In({ Args.[Output Folder] })
+    In({ Args.[TAZ Segment Counts] })
 EndMacro
 
