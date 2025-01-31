@@ -6,7 +6,7 @@
 Macro "TRM_Simplified" (Args)
 Body:
     // model = FlowChart( { StartNodes } , { EndNodes } , Description)
-    model = FlowChart({"Build Networks"},{"Production"},)
+    model = FlowChart({"Build Networks"},{"Trip Generation"},)
     //
     // Nodes
     //
@@ -15,7 +15,7 @@ Body:
     FlowChartNode(model,"Calculate Accessibility",,,)
     FlowChartNode(model,"Build Networks",,,)
     FlowChartNode(model,"Skimming",,,)
-    FlowChartNode(model,"Production",,,)
+    FlowChartNode(model,"Trip Generation",,,)
     //
     // Links
     //
@@ -23,7 +23,7 @@ Body:
     //
     FlowChartLink(model,"Build Networks","Skimming",True,,)
     FlowChartLink(model,"Skimming","Calculate Accessibility",True,,)
-    FlowChartLink(model,"Calculate Accessibility","Production",True,,)
+    FlowChartLink(model,"Calculate Accessibility","Trip Generation",True,,)
     Return(model)
 EndMacro
 
@@ -201,5 +201,59 @@ Data:
     In({ Args.[Model Folder] })
     In({ Args.[Output Folder] })
     In({ Args.[TAZ Segment Counts] })
+EndMacro
+
+
+Macro "Attraction" (Args,Result)
+    Attributes = {
+        {"Class", {"GISDK"}},
+        {"MacroNames", {"Trip Attraction"}}
+    }
+Data:
+    In({ Args.[Output Folder] })
+    In({ Args.[TAZ File] })
+EndMacro
+
+
+Macro "Calibrate and Balance" (Args,Result)
+    Attributes = {
+        {"Class", {"GISDK"}},
+        {"MacroNames", {"Calibrate and Balance"}}
+    }
+Data:
+    In({ Args.[HBO Calibration] })
+    In({ Args.[HBW Calibration] })
+    In({ Args.[NHB Calibration] })
+    In({ Args.[Output Folder] })
+EndMacro
+
+
+Macro "Trip Generation" (Args,Result)
+    Attributes = {
+        {"Description", "Stage 1"}
+    }
+Data:
+    In({ Args.[Model Folder] })
+    In({ Args.[Output Folder] })
+    In({ Args.[TAZ Segment Counts] })
+Body:
+    // model = FlowChart( { StartNodes } , { EndNodes } , Description)
+    model = FlowChart({"Production"},{"Calibrate and Balance"},"Group steps")
+    //
+    // Nodes
+    //
+    // FlowChartNode(model,NodeName,MacroName,UI,Description)
+    //
+    FlowChartNode(model,"Production",,,)
+    FlowChartNode(model,"Attraction",,,)
+    FlowChartNode(model,"Calibrate and Balance",,,)
+    //
+    // Links
+    //
+    // FlowChartLink(model , FromNode , ToNode , Condition , Description , IsFeedbackLoop)
+    //
+    FlowChartLink(model,"Production","Attraction",True,,)
+    FlowChartLink(model,"Attraction","Calibrate and Balance",True,,)
+    Return(model)
 EndMacro
 

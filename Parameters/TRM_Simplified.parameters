@@ -75,3 +75,22 @@
             "Description": "Cutoff/threshold for cumulative opportunity metrics",
             "Value": {15.0, 30.0, 45.0, 60.0}
         }
+
+    Section = "Calibration factors"
+        // calibration factors to bring productions in line with TRMG2, see discussion in balancing.rsc
+        Args.[HBW Calibration] = {
+            "Type": "real",
+            "Value": 0.46
+        }
+
+        Args.[HBO Calibration] = {
+            "Type": "real",
+            "Value": 0.41
+        }
+
+        Args.[NHB Calibration] = {
+            "Type": "real",
+            // not an empirical value because modeling of NHB trips in the TRM is different
+            // average of above two factors
+            "Value": 0.44
+        }
