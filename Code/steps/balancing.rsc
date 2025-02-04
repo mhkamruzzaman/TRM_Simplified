@@ -65,6 +65,11 @@ macro "Calibrate and Balance" (Args)
         AppendToLogFile(2, tt + ": calibration factor " + String(factor) + ", before total " + String(a_sum) + ", now total" + String(post_sum))
     end
 
+    AppendToLogFile(1, "Setting NHB productions equal to attractions")
+    att = GetDataVector(pa + "|", specs.NHB_A,)
+    SetDataVector(pa + "|", specs.NHB, att,)
+
+
     CloseView(pa)
 
     return(true)
