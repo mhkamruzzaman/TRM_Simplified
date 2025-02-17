@@ -13,17 +13,17 @@ macro "Calculate Nonmotorized Skims" (Args)
     AppendToLogFile(1, "Bike Skims")
     bikenet = RunMacro("Join Path", {Args.[Output Folder], "bike.net"})
     bikeskim = RunMacro("Join Path", {Args.[Output Folder], "bike_skims_All.mtx"})
-    RunMacro("Calculate Nonmotorized Skim", bikenet, Args.[Road Line Layer], bikeskim)
+    RunMacro("Calculate Nonmotorized Skim", bikenet, Args.[Road Line Layer], bikeskim, "Bike")
 
     AppendToLogFile(1, "Walk Skims")
     walknet = RunMacro("Join Path", {Args.[Output Folder], "walk.net"})
     walkskim = RunMacro("Join Path", {Args.[Output Folder], "walk_skims_All.mtx"})
-    RunMacro("Calculate Nonmotorized Skim", walknet, Args.[Road Line Layer], walkskim)
+    RunMacro("Calculate Nonmotorized Skim", walknet, Args.[Road Line Layer], walkskim, "Walk")
 
     return(true)
 endmacro
 
-macro "Calculate Nonmotorized Skim" (netfile, linelayer, outfile)
+macro "Calculate Nonmotorized Skim" (netfile, linelayer, outfile, mode)
     AppendToLogFile(2, "Network: " + netfile)
     AppendToLogFile(2, "Line layer: " + linelayer)
     AppendToLogFile(2, "Output file: " + outfile)
@@ -38,7 +38,7 @@ macro "Calculate Nonmotorized Skim" (netfile, linelayer, outfile)
     s.Minimize = "Time"
     s.AddSkimField({"Time", "All"})
     s.AddSkimField({"Length", "All"})
-    s.OutputMatrix({MatrixFile: outfile, Matrix: period + " Auto"})
+    s.OutputMatrix({MatrixFile: outfile, Matrix: mode})
     s.Run()
 
     AppendToLogFile(2, "Calculating intrazonal times")
