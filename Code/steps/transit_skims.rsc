@@ -9,12 +9,12 @@ macro "Transit Skims for Period" (network, route_system, period, outfile)
     o.Network = network
     o.OriginFilter = "Centroid <> null"
     o.DestinationFilter = "Centroid <> null"
-    o.SkimVariables = {"Generalized Cost", "Total Time"}
+    o.SkimVariables = {"Generalized Cost", "Total Time", "Number of Transfers"}
     o.OutputMatrix({MatrixFile: outfile, MatrixLabel: period + " Transit"})
     o.Run()
 
     // Intrazonal times (apply to both generalized cost and total time)
-    for skimvar in {"Generalized Cost", "Total Time"} do
+    for skimvar in {"Generalized Cost", "Total Time", "Number of Transfers"} do
         AppendToLogFile(3, "Calculating intrazonal times for " + skimvar)
         iz = CreateObject("Distribution.Intrazonal")
         iz.OperationType = "Replace"
