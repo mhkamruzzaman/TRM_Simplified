@@ -11,6 +11,7 @@ Code/util/flowchart.rsc
 Code/util/joinpath.rsc
 Code/util/create_drive_net_map.rsc
 Code/util/create_transit_net_map.rsc
+Code/util/check_file_existence.rsc
 Code/synthesis/trmg2_synthetic_generation.rsc
 Code/steps/initialize.rsc
 Code/steps/build_drive_net.rsc
@@ -23,3 +24,4 @@ Code/steps/accessibility.rsc
 Code/steps/production.rsc
 Code/steps/attraction.rsc
 Code/steps/balancing.rsc
+Code/steps/distribution.rsc

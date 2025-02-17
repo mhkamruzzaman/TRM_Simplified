@@ -6,7 +6,7 @@
 Macro "TRM_Simplified" (Args)
 Body:
     // model = FlowChart( { StartNodes } , { EndNodes } , Description)
-    model = FlowChart({"Build Networks"},{"Trip Generation"},)
+    model = FlowChart({"Build Networks"},{"Trip Distribution"},)
     //
     // Nodes
     //
@@ -16,6 +16,7 @@ Body:
     FlowChartNode(model,"Build Networks",,,)
     FlowChartNode(model,"Skimming",,,)
     FlowChartNode(model,"Trip Generation",,,)
+    FlowChartNode(model,"Trip Distribution",,,)
     //
     // Links
     //
@@ -24,6 +25,7 @@ Body:
     FlowChartLink(model,"Build Networks","Skimming",True,,)
     FlowChartLink(model,"Skimming","Calculate Accessibility",True,,)
     FlowChartLink(model,"Calculate Accessibility","Trip Generation",True,,)
+    FlowChartLink(model,"Trip Generation","Trip Distribution",True,,)
     Return(model)
 EndMacro
 
@@ -255,5 +257,16 @@ Body:
     FlowChartLink(model,"Production","Attraction",True,,)
     FlowChartLink(model,"Attraction","Calibrate and Balance",True,,)
     Return(model)
+EndMacro
+
+
+Macro "Trip Distribution" (Args,Result)
+    Attributes = {
+        {"Class", {"GISDK"}},
+        {"MacroNames", {"Run Trip Distribution"}}
+    }
+Data:
+    In({ Args.[Model Folder] })
+    In({ Args.[Output Folder] })
 EndMacro
 
