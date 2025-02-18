@@ -6,7 +6,7 @@
 Macro "TRM_Simplified" (Args)
 Body:
     // model = FlowChart( { StartNodes } , { EndNodes } , Description)
-    model = FlowChart({"Build Networks"},{"Trip Distribution"},)
+    model = FlowChart({"Build Networks"},{"Mode Choice"},)
     //
     // Nodes
     //
@@ -17,6 +17,7 @@ Body:
     FlowChartNode(model,"Skimming",,,)
     FlowChartNode(model,"Trip Generation",,,)
     FlowChartNode(model,"Trip Distribution",,,)
+    FlowChartNode(model,"Mode Choice",,,)
     //
     // Links
     //
@@ -26,6 +27,7 @@ Body:
     FlowChartLink(model,"Skimming","Calculate Accessibility",True,,)
     FlowChartLink(model,"Calculate Accessibility","Trip Generation",True,,)
     FlowChartLink(model,"Trip Generation","Trip Distribution",True,,)
+    FlowChartLink(model,"Trip Distribution","Mode Choice",True,,)
     Return(model)
 EndMacro
 
@@ -268,5 +270,15 @@ Macro "Trip Distribution" (Args,Result)
 Data:
     In({ Args.[Model Folder] })
     In({ Args.[Output Folder] })
+EndMacro
+
+
+Macro "Mode Choice" (Args,Result)
+    Attributes = {
+        {"Class", {"GISDK"}},
+        {"MacroNames", {"Mode Choice"}}
+    }
+Data:
+    In({ Args.[Model Folder] })
 EndMacro
 
