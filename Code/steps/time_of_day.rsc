@@ -37,7 +37,7 @@ Macro "Time of Day for Trip Type and Period" (folder, triptype, period, prop)
     modes = GetMatrixCoreNames(inputmx)
     curr = CreateMatrixCurrency(inputmx, modes[1],,,)
     result = CopyMatrixStructure({curr}, {
-        "File Name": RunMacro("Join Path", {folder, "mode_totals_" + triptype + "_" + period + ".mtx"}),
+        "File Name": RunMacro("Join Path", {folder, "mode_totals_" + triptype + "_" + period + "_PA.mtx"}),
         "Label": "Trip counts",
         "Tables": modes
     })

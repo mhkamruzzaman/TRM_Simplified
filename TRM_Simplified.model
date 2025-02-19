@@ -6,7 +6,7 @@
 Macro "TRM_Simplified" (Args)
 Body:
     // model = FlowChart( { StartNodes } , { EndNodes } , Description)
-    model = FlowChart({"Build Networks"},{"Time of Day"},)
+    model = FlowChart({"Build Networks"},{"Directionality"},)
     //
     // Nodes
     //
@@ -19,6 +19,7 @@ Body:
     FlowChartNode(model,"Trip Distribution",,,)
     FlowChartNode(model,"Mode Choice",,,)
     FlowChartNode(model,"Time of Day",,,)
+    FlowChartNode(model,"Directionality",,,)
     //
     // Links
     //
@@ -30,6 +31,7 @@ Body:
     FlowChartLink(model,"Trip Generation","Trip Distribution",True,,)
     FlowChartLink(model,"Trip Distribution","Mode Choice",True,,)
     FlowChartLink(model,"Mode Choice","Time of Day",True,,)
+    FlowChartLink(model,"Time of Day","Directionality",True,,)
     Return(model)
 EndMacro
 
@@ -289,6 +291,17 @@ Macro "Time of Day" (Args,Result)
     Attributes = {
         {"Class", {"GISDK"}},
         {"MacroNames", {"Time of Day"}}
+    }
+Data:
+    In({ Args.[Model Folder] })
+    In({ Args.[Output Folder] })
+EndMacro
+
+
+Macro "Directionality" (Args,Result)
+    Attributes = {
+        {"Class", {"GISDK"}},
+        {"MacroNames", { /* "Macro Name 1", ..., "Macro Name n" */ }}
     }
 Data:
     In({ Args.[Model Folder] })
