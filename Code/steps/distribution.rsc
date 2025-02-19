@@ -88,6 +88,8 @@ endmacro
 
 /**
  * Add a matrix index based on the ID column of the PA dataset from generation.
+ *
+ * NB also used in mode choice
  */
 Macro "Index Matrix With Internal IDs" (mtxfile, pafile)
     mtx = OpenMatrix(mtxfile, )
