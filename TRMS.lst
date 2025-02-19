@@ -26,3 +26,4 @@ Code/steps/attraction.rsc
 Code/steps/balancing.rsc
 Code/steps/distribution.rsc
 Code/steps/modechoice.rsc
+Code/steps/time_of_day.rsc
