@@ -6,14 +6,13 @@
 Macro "TRM_Simplified" (Args)
 Body:
     // model = FlowChart( { StartNodes } , { EndNodes } , Description)
-    model = FlowChart({"Build Networks"},{"Assignment"},)
+    model = FlowChart({"Copy Files"},{"Converged"},)
     //
     // Nodes
     //
     // FlowChartNode(model,NodeName,MacroName,UI,Description)
     //
     FlowChartNode(model,"Calculate Accessibility",,,)
-    FlowChartNode(model,"Build Networks",,,)
     FlowChartNode(model,"Skimming",,,)
     FlowChartNode(model,"Trip Generation",,,)
     FlowChartNode(model,"Trip Distribution",,,)
@@ -22,20 +21,28 @@ Body:
     FlowChartNode(model,"Directionality",,,)
     FlowChartNode(model,"Vehicle Trips",,,)
     FlowChartNode(model,"Assignment",,,)
+    FlowChartNode(model,"Check Convergence",,,)
+    FlowChartNode(model,"Converged",,,)
+    FlowChartNode(model,"Copy Files",,,)
+    FlowChartNode(model,"Build Networks",,,)
     //
     // Links
     //
     // FlowChartLink(model , FromNode , ToNode , Condition , Description , IsFeedbackLoop)
     //
-    FlowChartLink(model,"Build Networks","Skimming",True,,)
     FlowChartLink(model,"Skimming","Calculate Accessibility",True,,)
-    FlowChartLink(model,"Calculate Accessibility","Trip Generation",True,,)
-    FlowChartLink(model,"Trip Generation","Trip Distribution",True,,)
     FlowChartLink(model,"Trip Distribution","Mode Choice",True,,)
     FlowChartLink(model,"Mode Choice","Time of Day",True,,)
     FlowChartLink(model,"Time of Day","Directionality",True,,)
     FlowChartLink(model,"Directionality","Vehicle Trips",True,,)
     FlowChartLink(model,"Vehicle Trips","Assignment",True,,)
+    FlowChartLink(model,"Assignment","Check Convergence",True,,)
+    FlowChartLink(model,"Calculate Accessibility","Trip Generation",True,,)
+    FlowChartLink(model,"Trip Generation","Trip Distribution",True,,)
+    FlowChartLink(model,"Check Convergence","Build Networks",2,,1)
+    FlowChartLink(model,"Check Convergence","Converged",True,,)
+    FlowChartLink(model,"Copy Files","Build Networks",True,,)
+    FlowChartLink(model,"Build Networks","Skimming",True,,)
     Return(model)
 EndMacro
 
@@ -142,38 +149,6 @@ Macro "Nonmotorized Skims" (Args,Result)
 Data:
     In({ Args.[Output Folder] })
     In({ Args.[Road Line Layer] })
-EndMacro
-
-
-Macro "Build Networks" (Args,Result)
-    Attributes = {
-        {"Description", "Stage 1"}
-    }
-Data:
-    In({ Args.[Drive Filter] })
-    In({ Args.[Output Folder] })
-    In({ Args.[Road Line Layer] })
-Body:
-    // model = FlowChart( { StartNodes } , { EndNodes } , Description)
-    stage = FlowChart({"Copy Files"},{"Build Nonmotorized Networks"},"Group steps")
-    //
-    // Nodes
-    //
-    // FlowChartNode(model,NodeName,MacroName,UI,Description)
-    //
-    FlowChartNode(stage,"Build Drive Network",,,)
-    FlowChartNode(stage,"Build Transit Networks",,,)
-    FlowChartNode(stage,"Build Nonmotorized Networks",,,)
-    FlowChartNode(stage,"Copy Files",,,)
-    //
-    // Links
-    //
-    // FlowChartLink(model , FromNode , ToNode , Condition , Description , IsFeedbackLoop)
-    //
-    FlowChartLink(stage,"Build Drive Network","Build Transit Networks",True,,)
-    FlowChartLink(stage,"Build Transit Networks","Build Nonmotorized Networks",True,,)
-    FlowChartLink(stage,"Copy Files","Build Drive Network",True,,)
-    Return(stage)
 EndMacro
 
 
@@ -345,5 +320,54 @@ Macro "Assignment" (Args,Result)
     }
 Data:
     In({ Args.[Output Folder] })
+EndMacro
+
+
+Macro "Check Convergence" (Args,Result)
+    Attributes = {
+        {"Class", {"GISDK"}},
+        {"MacroNames", {"Update Speeds and Check Convergence"}}
+    }
+Data:
+    In({ Args.[Assignment Convergence PRMSE] })
+    In({ Args.[Output Folder] })
+EndMacro
+
+
+Macro "Converged" (Args,Result)
+    Attributes = {
+        {"Class", {"GISDK"}},
+        {"MacroNames", { /* "Macro Name 1", ..., "Macro Name n" */ }}
+    }
+EndMacro
+
+
+Macro "Build Networks" (Args,Result)
+    Attributes = {
+        {"Description", "Stage 1"}
+    }
+Data:
+    In({ Args.[Drive Filter] })
+    In({ Args.[Output Folder] })
+    In({ Args.[Road Line Layer] })
+Body:
+    // model = FlowChart( { StartNodes } , { EndNodes } , Description)
+    model = FlowChart({"Build Drive Network"},{"Build Nonmotorized Networks"},"Group steps")
+    //
+    // Nodes
+    //
+    // FlowChartNode(model,NodeName,MacroName,UI,Description)
+    //
+    FlowChartNode(model,"Build Drive Network",,,)
+    FlowChartNode(model,"Build Transit Networks",,,)
+    FlowChartNode(model,"Build Nonmotorized Networks",,,)
+    //
+    // Links
+    //
+    // FlowChartLink(model , FromNode , ToNode , Condition , Description , IsFeedbackLoop)
+    //
+    FlowChartLink(model,"Build Drive Network","Build Transit Networks",True,,)
+    FlowChartLink(model,"Build Transit Networks","Build Nonmotorized Networks",True,,)
+    Return(model)
 EndMacro
 
