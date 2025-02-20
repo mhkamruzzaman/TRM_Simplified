@@ -1,0 +1,21 @@
+HCMType,HCMMedian,CapacityPerLane,ModifyPosted,Alpha,Beta,Notes
+Freeway,Restrictive,2303,2,0.65,7,NA
+MLHighway,Restrictive,1680,0,0.7,4,NA
+TLHighway,None,1470,-1,1.15,5,NA
+Superstreet,Restrictive,1800,2,0.75,4.25,NA
+MajorArterial,None,1086,0,1,5.25,NA
+MajorArterial,NonRestrictive,1440,0,1,5.25,NA
+MajorArterial,Restrictive,1300,0,1,5.25,NA
+Arterial,None,1140,0,1.15,5,NA
+Arterial,NonRestrictive,1188,0,1.15,5,NA
+Arterial,Restrictive,1455,0,1.15,5,NA
+MajorCollector,None,880,4,1.25,4,NA
+MajorCollector,NonRestrictive,990,4,1.25,4,NA
+MajorCollector,Restrictive,1012,4,1.25,4,NA
+Collector,None,780,2,1.6,4,NA
+Collector,NonRestrictive,890,2,1.6,4,NA
+Collector,Restrictive,912,2,1.6,4,NA
+Local,None,780,0,1.9,4,NA
+Local,NonRestrictive,890,0,1.9,4,NA
+Local,Restrictive,912,0,1.9,4,NA
+CC,None,10000,0,0.15,4,"CC speed set separately. See the ""CCSpeeds"" parameter in the flow chart."

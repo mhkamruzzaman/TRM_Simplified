@@ -11,7 +11,7 @@ macro "Build Drive Network" (Args)
     AppendToLogFile(0, "Build Drive Network")
 
     // build the network
-    // Modified from tRMG2 code
+    // Modified from TRMG2 code
     o = CreateObject("Network.Create")
     o.LayerDB = RunMacro("Join Path", {Args.[Output Folder], "road_network.dbd"})
     o.Filter = Args.[Drive Filter]  
@@ -25,6 +25,10 @@ macro "Build Drive Network" (Args)
     o.AddLinkField({Name: "BusTimeMD", Field: {"ABBusTimeMD", "BABusTimeMD"}, IsTimeField: true})
     o.AddLinkField({Name: "BusTimePM", Field: {"ABBusTimePM", "BABusTimePM"}, IsTimeField: true})
     o.AddLinkField({Name: "BusTimeNT", Field: {"ABBusTimeNT", "BABusTimeNT"}, IsTimeField: true})
+    o.AddLinkField({Name: "FFTime", Field: "FFTime", IsTimeField: true})
+    o.AddLinkField({Name: "Capacity", Field: {"ABCapacity", "BACapacity"}, IsTimeField: false})
+    o.AddLinkField({Name: "Alpha", Field: "Alpha", IsTimeField: false})
+    o.AddLinkField({Name: "Beta", Field: "Beta", IsTimeField: false})
 
     o.AddNodeField({Name: "Centroid", Field: "Centroid"})
 

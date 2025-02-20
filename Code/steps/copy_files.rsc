@@ -1,6 +1,7 @@
 Macro "Copy Files" (Args)
     Data:
     In({Args.[Output Folder]})
+    In({Args.[Model Folder]})
     In({Args.[Road Line Layer]})
     In({Args.[Transit Route System]})
 
@@ -29,7 +30,8 @@ Macro "Copy Files" (Args)
     ModifyRouteSystem(routes, {{"Geography", rn, "master_links"}})
 
     AppendToLogFile(1, "Setting initial speeds")
-    RunMacro("Calculate Initial Speeds", rn)
+    vdffile = RunMacro("Join Path", {Args.[Model Folder], "Data", "vdf.csv"})
+    RunMacro("Calculate Initial Speeds", rn, vdffile)
 
     return(true)
 endmacro
