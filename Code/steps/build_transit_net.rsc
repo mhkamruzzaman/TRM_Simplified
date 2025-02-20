@@ -27,8 +27,6 @@ endmacro
 
 macro "Build Transit Networks" (Args)
     Data:
-        In({Args.[Transit Route System]})
-        In({Args.[Road Line Layer]})
         In({Args.[Output Folder]})
         In({Args.[Bus Speed Table]})
         In({Args.[Bike Speed MPH]})
@@ -41,15 +39,18 @@ macro "Build Transit Networks" (Args)
         return(false)
     end
 
-    RunMacro("Calculate Bus Speeds", Args.[Road Line Layer], Args.[Bus Speed Table], Args.[Walk Speed MPH], Args.[Bike Speed MPH])
+    roads = RunMacro("Join Path", {Args.[Output Folder], "road_network.dbd"})
+    RunMacro("Calculate Bus Speeds", roads, Args.[Bus Speed Table], Args.[Walk Speed MPH], Args.[Bike Speed MPH])
+
+    rs = RunMacro("Join Path", {Args.[Output Folder], "transit_network.rts"})
 
     for period in {"AM", "MD", "PM", "NT"} do
-        RunMacro("Build Transit Network for Period", Args.[Transit Route System], Args.[Output Folder], period)
+        RunMacro("Build Transit Network for Period", rs, Args.[Output Folder], period)
 
         AppendToLogFile(1, "Configuring network")
 
         settings = CreateObject("Network.SetPublicPathFinder",
-            {RS: Args.[Transit Route System], NetworkName: Args.[Output Folder] + "transit_" + period + ".tnw"})
+            {RS: rs, NetworkName: Args.[Output Folder] + "transit_" + period + ".tnw"})
         settings.UserClasses = {"Yall"}
         settings.CurrentClass = "Yall"
         settings.LinkImpedance = "Time"
@@ -59,7 +60,7 @@ macro "Build Transit Networks" (Args)
 
         AppendToLogFile(1, "Mapping network")
 
-        RunMacro("Create Transit Net Map", Args.[Road Line Layer], Args.[Transit Route System], period,
+        RunMacro("Create Transit Net Map", roads, rs, period,
             Args.[Output Folder] + "transit_" + period + ".tnw", Args.[Output Folder] + "transit_" + period + ".map")
     end
 

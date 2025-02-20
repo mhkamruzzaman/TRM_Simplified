@@ -22,7 +22,7 @@ Macro "Calculate Initial Speeds" (out_dbd)
     llyr = AddLayerToWorkspace(llyr, out_dbd, llyr)  
 
     // if you initialize this as {}, the first element will be null (I guess GISDK can't do empty arrays)
-    a_fields = {{"mode", "Int", 1, , , , , "test"}}
+    a_fields = {{"mode", "Int", 1, , , , , "test"}, {"FFTime", "Real", 10, 2, , , , "Free-flow time"}}
 
     for period in {"AM", "MD", "PM", "NT"} do
         for dir in {"AB", "BA"} do
@@ -51,6 +51,8 @@ Macro "Calculate Initial Speeds" (out_dbd)
     ffs = length / posted_speeds * 60  // convert to minutes
     ffsAB = CopyVector(ffs)
     ffsBA = CopyVector(ffs)
+
+    SetDataVector(llyr + "|", "FFTime", ffs, )
 
     for i = 1 to ffs.length do
         if dir[i] = -1 then ffsAB[i] = null

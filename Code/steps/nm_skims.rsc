@@ -1,7 +1,6 @@
 macro "Calculate Nonmotorized Skims" (Args)
     Data:
         In({Args.[Output Folder]})
-        In({Args.[Road Line Layer]})
     Body:
 
     on error do
@@ -10,15 +9,17 @@ macro "Calculate Nonmotorized Skims" (Args)
     end
 
     AppendToLogFile(0, "Nonmotorized Skims")
+    roads = RunMacro("Join Path", {Args.[Output Folder], "road_network.dbd"})
+
     AppendToLogFile(1, "Bike Skims")
     bikenet = RunMacro("Join Path", {Args.[Output Folder], "bike.net"})
     bikeskim = RunMacro("Join Path", {Args.[Output Folder], "bike_skims_All.mtx"})
-    RunMacro("Calculate Nonmotorized Skim", bikenet, Args.[Road Line Layer], bikeskim, "Bike")
+    RunMacro("Calculate Nonmotorized Skim", bikenet, roads, bikeskim, "Bike")
 
     AppendToLogFile(1, "Walk Skims")
     walknet = RunMacro("Join Path", {Args.[Output Folder], "walk.net"})
     walkskim = RunMacro("Join Path", {Args.[Output Folder], "walk_skims_All.mtx"})
-    RunMacro("Calculate Nonmotorized Skim", walknet, Args.[Road Line Layer], walkskim, "Walk")
+    RunMacro("Calculate Nonmotorized Skim", walknet, roads, walkskim, "Walk")
 
     return(true)
 endmacro

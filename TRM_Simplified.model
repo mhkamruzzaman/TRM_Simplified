@@ -6,7 +6,7 @@
 Macro "TRM_Simplified" (Args)
 Body:
     // model = FlowChart( { StartNodes } , { EndNodes } , Description)
-    model = FlowChart({"Build Networks"},{"Directionality"},)
+    model = FlowChart({"Build Networks"},{"Vehicle Trips"},)
     //
     // Nodes
     //
@@ -20,6 +20,7 @@ Body:
     FlowChartNode(model,"Mode Choice",,,)
     FlowChartNode(model,"Time of Day",,,)
     FlowChartNode(model,"Directionality",,,)
+    FlowChartNode(model,"Vehicle Trips",,,)
     //
     // Links
     //
@@ -32,6 +33,7 @@ Body:
     FlowChartLink(model,"Trip Distribution","Mode Choice",True,,)
     FlowChartLink(model,"Mode Choice","Time of Day",True,,)
     FlowChartLink(model,"Time of Day","Directionality",True,,)
+    FlowChartLink(model,"Directionality","Vehicle Trips",True,,)
     Return(model)
 EndMacro
 
@@ -151,23 +153,25 @@ Data:
     In({ Args.[Road Line Layer] })
 Body:
     // model = FlowChart( { StartNodes } , { EndNodes } , Description)
-    model = FlowChart({"Build Drive Network"},{"Build Nonmotorized Networks"},"Group steps")
+    stage = FlowChart({"Copy Files"},{"Build Nonmotorized Networks"},"Group steps")
     //
     // Nodes
     //
     // FlowChartNode(model,NodeName,MacroName,UI,Description)
     //
-    FlowChartNode(model,"Build Drive Network",,,)
-    FlowChartNode(model,"Build Transit Networks",,,)
-    FlowChartNode(model,"Build Nonmotorized Networks",,,)
+    FlowChartNode(stage,"Build Drive Network",,,)
+    FlowChartNode(stage,"Build Transit Networks",,,)
+    FlowChartNode(stage,"Build Nonmotorized Networks",,,)
+    FlowChartNode(stage,"Copy Files",,,)
     //
     // Links
     //
     // FlowChartLink(model , FromNode , ToNode , Condition , Description , IsFeedbackLoop)
     //
-    FlowChartLink(model,"Build Drive Network","Build Transit Networks",True,,)
-    FlowChartLink(model,"Build Transit Networks","Build Nonmotorized Networks",True,,)
-    Return(model)
+    FlowChartLink(stage,"Build Drive Network","Build Transit Networks",True,,)
+    FlowChartLink(stage,"Build Transit Networks","Build Nonmotorized Networks",True,,)
+    FlowChartLink(stage,"Copy Files","Build Drive Network",True,,)
+    Return(stage)
 EndMacro
 
 
@@ -306,5 +310,27 @@ Macro "Directionality" (Args,Result)
 Data:
     In({ Args.[Model Folder] })
     In({ Args.[Output Folder] })
+EndMacro
+
+
+Macro "Vehicle Trips" (Args,Result)
+    Attributes = {
+        {"Class", {"GISDK"}},
+        {"MacroNames", {"Vehicle Trips"}}
+    }
+Data:
+    In({ Args.[Output Folder] })
+EndMacro
+
+
+Macro "Copy Files" (Args,Result)
+    Attributes = {
+        {"Class", {"GISDK"}},
+        {"MacroNames", {"Copy Files"}}
+    }
+Data:
+    In({ Args.[Output Folder] })
+    In({ Args.[Road Line Layer] })
+    In({ Args.[Transit Route System] })
 EndMacro
 

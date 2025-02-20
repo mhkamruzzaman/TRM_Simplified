@@ -13,6 +13,7 @@ Code/util/create_drive_net_map.rsc
 Code/util/create_transit_net_map.rsc
 Code/util/check_file_existence.rsc
 Code/synthesis/trmg2_synthetic_generation.rsc
+Code/steps/copy_files.rsc
 Code/steps/initialize.rsc
 Code/steps/build_drive_net.rsc
 Code/steps/build_transit_net.rsc
@@ -28,3 +29,4 @@ Code/steps/distribution.rsc
 Code/steps/modechoice.rsc
 Code/steps/time_of_day.rsc
 Code/steps/pa_od.rsc
+Code/steps/vehicle_trips.rsc

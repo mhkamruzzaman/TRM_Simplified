@@ -9,6 +9,8 @@ macro "Transit Skims for Period" (network, route_system, period, outfile)
     o.Network = network
     o.OriginFilter = "Centroid <> null"
     o.DestinationFilter = "Centroid <> null"
+    // TODO FIXME: why are there some cells where total time is null but generalized cost is not, or transfers is not.
+    // shouldn't the nulls match?
     o.SkimVariables = {"Generalized Cost", "Total Time", "Number of Transfers"}
     o.OutputMatrix({MatrixFile: outfile, MatrixLabel: period + " Transit"})
     o.Run()
@@ -24,12 +26,18 @@ macro "Transit Skims for Period" (network, route_system, period, outfile)
         iz.SetMatrix(outfile, skimvar)
         iz.Run()
     end
+
+    // Availability
+    mtx = OpenMatrix(outfile, )
+    AddMatrixCore(mtx, "Available")
+    time = CreateMatrixCurrency(mtx, "Total Time",,,)
+    av = CreateMatrixCurrency(mtx, "Available",,,)
+    av := if time = null then 0 else 1
 endmacro
 
 macro "Calculate Transit Skims" (Args, Result)
     Data:
         In({Args.[Output Folder]})
-        In({Args.[Transit Route System]})
     Body:
     on error do
         ShowMessage(GetLastError())
@@ -42,7 +50,7 @@ macro "Calculate Transit Skims" (Args, Result)
         AppendToLogFile(1, period)
         RunMacro("Transit Skims for Period",
             Args.[Output Folder] + "transit_" + period + ".tnw",
-            Args.[Transit Route System],
+            RunMacro("Join Path", {Args.[Output Folder], "transit_network.rts"}),
             period,
             Args.[Output Folder] + "transit_skims_" + period + ".mtx"
         )

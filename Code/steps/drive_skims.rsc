@@ -32,14 +32,13 @@ endmacro
 macro "Calculate All Drive Skims" (Args, Result)
     Data:
         In({Args.[Output Folder]})
-        In({Args.[Road Line Layer]})
     Body:
     AppendToLogFile(0, "Drive Skims")
     for period in {"AM", "MD", "PM", "NT"} do
         AppendToLogFile(1, period)
         RunMacro("Calculate Drive Skim for Period",
             Args.[Output Folder] + "auto.net",
-            Args.[Road Line Layer],
+            RunMacro("Join Path", {Args.[Output Folder], "road_network.dbd"}),
             period,
             Args.[Output Folder] + "auto_skims_" + period + ".mtx"
         )

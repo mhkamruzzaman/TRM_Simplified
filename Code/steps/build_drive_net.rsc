@@ -3,7 +3,6 @@ Build the road network (for driving)
 */
 macro "Build Drive Network" (Args)
     Data:
-        In({Args.[Road Line Layer]})
         In({Args.[Output Folder]})
         In({Args.[Drive Filter]})
 
@@ -14,7 +13,7 @@ macro "Build Drive Network" (Args)
     // build the network
     // Modified from tRMG2 code
     o = CreateObject("Network.Create")
-    o.LayerDB = Args.[Road Line Layer]
+    o.LayerDB = RunMacro("Join Path", {Args.[Output Folder], "road_network.dbd"})
     o.Filter = Args.[Drive Filter]  
     o.LengthField = "Length"
     
@@ -36,7 +35,7 @@ macro "Build Drive Network" (Args)
 
 
     AppendToLogFile(1, "Creating map file")
-    RunMacro("Create Road Network Map", Args.[Road Line Layer], "Drive", Args.[Drive Filter],
+    RunMacro("Create Road Network Map", RunMacro("Join Path", {Args.[Output Folder], "road_network.dbd"}), "Drive", Args.[Drive Filter],
     Args.[Output Folder] + "auto.net", Args.[Output Folder] + "auto.map")
 
     return(true)
