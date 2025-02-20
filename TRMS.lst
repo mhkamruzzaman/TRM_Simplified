@@ -30,3 +30,4 @@ Code/steps/modechoice.rsc
 Code/steps/time_of_day.rsc
 Code/steps/pa_od.rsc
 Code/steps/vehicle_trips.rsc
+Code/steps/assignment.rsc

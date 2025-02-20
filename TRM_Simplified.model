@@ -6,7 +6,7 @@
 Macro "TRM_Simplified" (Args)
 Body:
     // model = FlowChart( { StartNodes } , { EndNodes } , Description)
-    model = FlowChart({"Build Networks"},{"Vehicle Trips"},)
+    model = FlowChart({"Build Networks"},{"Assignment"},)
     //
     // Nodes
     //
@@ -21,6 +21,7 @@ Body:
     FlowChartNode(model,"Time of Day",,,)
     FlowChartNode(model,"Directionality",,,)
     FlowChartNode(model,"Vehicle Trips",,,)
+    FlowChartNode(model,"Assignment",,,)
     //
     // Links
     //
@@ -34,6 +35,7 @@ Body:
     FlowChartLink(model,"Mode Choice","Time of Day",True,,)
     FlowChartLink(model,"Time of Day","Directionality",True,,)
     FlowChartLink(model,"Directionality","Vehicle Trips",True,,)
+    FlowChartLink(model,"Vehicle Trips","Assignment",True,,)
     Return(model)
 EndMacro
 
@@ -329,8 +331,19 @@ Macro "Copy Files" (Args,Result)
         {"MacroNames", {"Copy Files"}}
     }
 Data:
+    In({ Args.[Model Folder] })
     In({ Args.[Output Folder] })
     In({ Args.[Road Line Layer] })
     In({ Args.[Transit Route System] })
+EndMacro
+
+
+Macro "Assignment" (Args,Result)
+    Attributes = {
+        {"Class", {"GISDK"}},
+        {"MacroNames", {"Assignment"}}
+    }
+Data:
+    In({ Args.[Output Folder] })
 EndMacro
 
