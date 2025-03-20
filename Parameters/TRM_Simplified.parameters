@@ -77,20 +77,29 @@
         }
 
     Section = "Calibration factors"
-        // calibration factors to bring productions in line with TRMG2, see discussion in balancing.rsc
+        // calibration factors to bring productions in line with TRMG2, see discussion in balancing.rsc.
+        // empirical factors multiplied 1.4 to scale 2021 travel demand to 2018
+        // update: the "survey" used to calibrate generation is based on the output of the TRM, so applying
+        // scaling factors here is double-counting. set to 1.
         Args.[HBW Calibration] = {
             "Type": "real",
-            "Value": 0.46
+            "Value": 1
         }
 
         Args.[HBO Calibration] = {
             "Type": "real",
-            "Value": 0.41
+            "Value": 1
         }
 
         Args.[NHB Calibration] = {
             "Type": "real",
             // not an empirical value because modeling of NHB trips in the TRM is different
             // average of above two factors
-            "Value": 0.44
+            "Value": 1
+        }
+
+        Args.[Assignment Convergence PRMSE] = {
+            "Type": "real",
+            "Description": "Model will iterate until this weighted link speed PRMSE is reached",
+            "Value": 0.01
         }
