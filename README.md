@@ -24,7 +24,7 @@ Download the "Model Inputs" folder from Teams, and unzip it and put it somewhere
 
 ### Trip rates
 
-In the data folder you need to create the files `triprates.bin` and `triprates.DCB`. This is a table containing HBO, HBW, and NHB trip rates based on income, number of workers, household size, and accessibility, that should look something like the following (your numbers will not exactly match mine depending on which access metric you chose in the trip rate homework):
+In the Data folder you need to create the files `triprates.bin` and `triprates.DCB`. This is a table containing HBO, HBW, and NHB trip rates based on income, number of workers, household size, and accessibility, that should look something like the following (your numbers will not exactly match mine depending on which access metric you chose in the trip rate homework):
 
 ![](readme_images/triprates.png)
 
@@ -34,14 +34,14 @@ Copy the `Data\\distribution_parameters_template.csv` file to `Data\\distributio
 
 ### Mode choice model
 
-Copy your mode choice model file to `Data\\modechoice.mdl`. This model will be applied in the mode choice step.
+Copy your mode choice model file to `Data\\mode_choice.mdl`. This model will be applied in the mode choice step.
 
 ### Commit your changes
 
 `git` is a version control system, so you can always restore previous versions of your code. It operates on the basis of "commits"; a commit is basically a snapshot of your repository at some point in time. We will create a new commit with the three modifications we made above. Committing is a two-step process; first we add the files we changed, then we commit them. Once again, open the terminal within VSCode. Run
 
 ```powershell
-git add .\\Data\\triprates.bin .\\Data\\triprates.DCB .\\Data\\distribution_parameters.csv .\\Data\\modechoice.mdl
+git add .\\Data\\triprates.bin .\\Data\\triprates.DCB .\\Data\\distribution_parameters.csv .\\Data\\mode_choice.mdl
 git commit -m "add trip rates, distribution parameters, and mode choice model"
 git push
 ```
@@ -64,7 +64,7 @@ The `.vscode\\tasks.json` file configures VSCode to compile the files. If you op
 
 A number of files will be created in `Bin`; these are the compiled files.
 
-####
+#### Within TransCAD
 
 Open TransCAD, and display the GISDK toolbar (under Tools -> GIS Developer's Kit). Choose the "Compile to UI" option in the toolbar that appears, and then select the TRMS.lst file, which is just a list of all the code files that make up the model. Press OK. In the next window, save the file in the `Bin` folder, and call it `trms`.
 
