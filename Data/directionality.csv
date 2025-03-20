@@ -1,0 +1,9 @@
+"GroupedBy(TripType_Period)","Count(TripType_Period)","TripType","Period","Avg PA"
+"HBO_AM",15707,"HBO","AM",0.812158
+"HBO_MD",14094,"HBO","MD",0.542031
+"HBO_NT",8392,"HBO","NT",0.924173
+"HBO_PM",16164,"HBO","PM",0.244233
+"HBW_AM",2461,"HBW","AM",0.817685
+"HBW_MD",2206,"HBW","MD",0.542612
+"HBW_NT",1268,"HBW","NT",0.920909
+"HBW_PM",2468,"HBW","PM",0.208142
