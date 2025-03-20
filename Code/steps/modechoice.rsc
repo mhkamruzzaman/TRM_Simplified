@@ -19,7 +19,7 @@ macro "Mode Choice" (Args)
     o.AggregateModel = 1
     o.OpenMatrixSource({SourceName: "Auto", FileName: RunMacro("Join Path", {Args.[Output Folder], "auto_skims_MD.mtx"})})
     o.OpenMatrixSource({SourceName: "Bike", FileName: RunMacro("Join Path", {Args.[Output Folder], "bike_skims_All.mtx"})})
-    o.OpenMatrixSource({SourceName: "Transit", FileName: RunMacro("Join Path", {Args.[Output Folder], "transit_skims_MD.mtx"})})
+    o.OpenMatrixSource({SourceName: "Transit", FileName: RunMacro("Join Path", {Args.[Output Folder], "transit_skims_AM.mtx"})})
     o.OpenMatrixSource({SourceName: "Walk", FileName: RunMacro("Join Path", {Args.[Output Folder], "walk_skims_All.mtx"})})
     o.OpenTableSource({SourceName: "Access", FileName: RunMacro("Join Path", {Args.[Output Folder], "access.bin"})})
 
