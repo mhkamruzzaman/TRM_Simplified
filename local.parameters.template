@@ -2,8 +2,14 @@ Section = "Local Config"
     Args.[Base Folder] = {
             "Type": "Folder",
             "Description": "Folder containing inputs for this model run",
-            "Value": "C:\\Users\\mwbc\\Documents\\Inputs"
+            "Value": "C:\\Users\\path\\to\\inputs"
         }
+
+    Args.[Model Folder] = {
+        "Type": "Folder",
+        "Description": "Folder containing the model itself (i.e. C:\\...\\plan739_model)",
+        "Value": "C:\\Users\\path\\to\\TRM_Simplified"
+    }
 
     Args.[Create New Output Folder Each Run] = {
         "Type": "bool",
