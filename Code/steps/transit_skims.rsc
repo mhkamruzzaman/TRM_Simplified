@@ -11,11 +11,14 @@ macro "Transit Skims for Period" (network, route_system, period, outfile)
     o.DestinationFilter = "Centroid <> null"
     // TODO FIXME: why are there some cells where total time is null but generalized cost is not, or transfers is not.
     // shouldn't the nulls match?
+    // Appears to only be on-diagonal elements. Something to do with IZ trip factoring.
     o.SkimVariables = {"Generalized Cost", "Total Time", "Number of Transfers"}
     o.OutputMatrix({MatrixFile: outfile, MatrixLabel: period + " Transit"})
     o.Run()
 
     // Intrazonal times (apply to both generalized cost and total time)
+    // Currently removed from calculation - see FIXME above
+    /*
     for skimvar in {"Generalized Cost", "Total Time", "Number of Transfers"} do
         AppendToLogFile(3, "Calculating intrazonal times for " + skimvar)
         iz = CreateObject("Distribution.Intrazonal")
@@ -26,6 +29,7 @@ macro "Transit Skims for Period" (network, route_system, period, outfile)
         iz.SetMatrix(outfile, skimvar)
         iz.Run()
     end
+    */
 
     // Availability
     mtx = OpenMatrix(outfile, )
