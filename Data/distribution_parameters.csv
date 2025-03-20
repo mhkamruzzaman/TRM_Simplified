@@ -1,0 +1,4 @@
+Purpose,Method,a,b,c,constraint
+NHB,Exponential,,,0.2776,Production
+HBO,Exponential,,,0.2380,Production
+HBW,Exponential,,,0.1348,Production
