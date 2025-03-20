@@ -4,3 +4,4 @@ Bin/*
 Output/*
 !Output/.gitkeep
 local.parameters
+Data/*.DCC
